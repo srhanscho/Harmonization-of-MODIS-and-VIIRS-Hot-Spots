@@ -1,0 +1,1 @@
+{"group":"CO-VAU","year":2002,"cell_size":0.1,"regions":["CO-VAU"],"null_months":[],"format":"[lon_center, lat_center, region_index, month, value, month, value, ...]","cells":[[-69.65,-0.55,0,9,8],[-70.15,0.25,0,10,4],[-70.05,0.45,0,9,8],[-69.15,0.65,0,11,4],[-70.25,1.15,0,10,4],[-71.05,1.45,0,1,1199],[-70.15,1.45,0,12,6]]}

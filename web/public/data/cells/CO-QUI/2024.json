@@ -1,0 +1,1 @@
+{"group":"CO-QUI","year":2024,"cell_size":0.1,"regions":["CO-QUI"],"null_months":[],"format":"[lon_center, lat_center, region_index, month, value, month, value, ...]","cells":[[-75.75,4.25,0,9,4],[-75.75,4.35,0,3,4,8,4],[-75.85,4.45,0,2,1],[-75.75,4.45,0,3,2],[-75.85,4.55,0,2,1,9,1]]}

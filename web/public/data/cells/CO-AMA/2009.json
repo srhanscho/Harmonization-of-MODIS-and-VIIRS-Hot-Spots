@@ -1,0 +1,1 @@
+{"group":"CO-AMA","year":2009,"cell_size":0.1,"regions":["CO-AMA"],"null_months":[],"format":"[lon_center, lat_center, region_index, month, value, month, value, ...]","cells":[[-70.35,-3.25,0,9,6],[-69.85,-2.85,0,10,6],[-72.85,-1.45,0,3,6],[-72.75,-1.45,0,3,6,4,6,10,6,12,6],[-72.65,-1.45,0,3,6]]}

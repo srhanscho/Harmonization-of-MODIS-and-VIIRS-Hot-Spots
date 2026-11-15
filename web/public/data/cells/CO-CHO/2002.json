@@ -1,0 +1,1 @@
+{"group":"CO-CHO","year":2002,"cell_size":0.1,"regions":["CO-CHO"],"null_months":[],"format":"[lon_center, lat_center, region_index, month, value, month, value, ...]","cells":[[-76.55,7.25,0,3,42],[-77.35,7.45,0,3,42],[-77.25,7.45,0,3,42],[-77.25,7.55,0,3,21],[-77.15,8.05,0,3,21],[-77.15,8.15,0,3,21]]}

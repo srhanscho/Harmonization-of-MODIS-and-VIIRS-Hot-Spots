@@ -1,0 +1,360 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-sans);
+  --font-mono: ui-monospace, Menlo, Consolas, monospace;
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+/*
+  Visual system: a light Earth-observation workbench. Cool off-white ground, white
+  instrument panels with crisp 1px rules and soft offset shadows, deep navy ink.
+  One science blue (--sci) carries every UI state (active, focus, selection); the
+  fire ramp in lib/palette.ts is reserved for data; --alert is the only warm UI hue.
+*/
+:root {
+  --ink-0: #eef2f6; /* page ground */
+  --ink-1: #ffffff; /* panels */
+  --ink-2: #f4f6f9; /* inset controls */
+  --ink-3: #e7ecf2; /* hover / pressed */
+  --glass: #ffffff; /* floating over the map */
+  --glass-strong: #ffffff;
+  --line: #dde3ea;
+  --line-strong: #c4ceda;
+  --text-1: #0b1f3a;
+  --text-2: #3b4a60;
+  --text-3: #5b6a7e;
+  --sci: #0b5cad;
+  --sci-strong: #084a8c;
+  --sci-soft: rgba(11, 92, 173, 0.09);
+  --alert: #b93a0e;
+  --space: radial-gradient(120% 90% at 50% 38%, #1f3f6b 0%, #102a4f 42%, #081a33 78%, #06142a 100%);
+  --shadow-float: 0 1px 2px rgba(11, 31, 58, 0.06), 0 10px 28px -12px rgba(11, 31, 58, 0.28);
+
+  --radius: 0.5rem;
+  --background: var(--ink-0);
+  --foreground: var(--text-1);
+  --card: var(--ink-1);
+  --card-foreground: var(--text-1);
+  --popover: var(--ink-1);
+  --popover-foreground: var(--text-1);
+  --primary: var(--sci);
+  --primary-foreground: #ffffff;
+  --secondary: var(--ink-2);
+  --secondary-foreground: var(--text-1);
+  --muted: var(--ink-2);
+  --muted-foreground: var(--text-2);
+  --accent: var(--ink-3);
+  --accent-foreground: var(--text-1);
+  --destructive: var(--alert);
+  --border: var(--line);
+  --input: var(--line-strong);
+  --ring: var(--sci);
+  --chart-1: #f6d746;
+  --chart-2: #f37819;
+  --chart-3: #bc3754;
+  --chart-4: #6a176e;
+  --chart-5: #420a68;
+  --sidebar: var(--ink-1);
+  --sidebar-foreground: var(--text-1);
+  --sidebar-primary: var(--sci);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--ink-3);
+  --sidebar-accent-foreground: var(--text-1);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--sci);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+  html,
+  body {
+    background: var(--ink-0);
+    color: var(--text-1);
+  }
+  body {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+  :focus-visible {
+    outline: 2px solid var(--sci);
+    outline-offset: 2px;
+  }
+}
+
+/* ---------- Type scale (fixed rem, ~1.2 ratio) ---------- */
+.t-caption {
+  font-size: 0.6875rem; /* 11 */
+  line-height: 1.35;
+  color: var(--text-3);
+}
+.t-label {
+  font-size: 0.75rem; /* 12 */
+  line-height: 1.3;
+  font-weight: 500;
+  color: var(--text-3);
+}
+.t-title {
+  font-size: 1.125rem; /* 18 */
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--text-1);
+}
+.t-figure {
+  font-size: 1.625rem; /* 26 */
+  line-height: 1.05;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+}
+.num {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* ---------- Surfaces ---------- */
+.panel {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-float);
+}
+.panel-solid {
+  background: var(--glass-strong);
+}
+/* Small white label chip for text that sits directly on imagery. */
+.chip {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(11, 31, 58, 0.08);
+}
+
+/* ---------- Controls ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--ink-1);
+  color: var(--text-1);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background-color 160ms ease-out,
+    border-color 160ms ease-out,
+    color 160ms ease-out;
+}
+.btn:hover:not(:disabled) {
+  background: var(--ink-2);
+  border-color: #aab7c6;
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-icon {
+  width: 2rem;
+  padding: 0;
+  justify-content: center;
+}
+.btn-quiet {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-2);
+}
+.btn-quiet:hover:not(:disabled) {
+  color: var(--text-1);
+  background: var(--ink-3);
+  border-color: transparent;
+}
+.btn-primary {
+  background: var(--sci);
+  border-color: var(--sci);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--sci-strong);
+  border-color: var(--sci-strong);
+}
+
+/* Segmented control: tabs, language, Raw/Harmonized. */
+.seg {
+  display: inline-flex;
+  padding: 2px;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--ink-2);
+}
+.seg > button {
+  height: 1.75rem;
+  padding: 0 0.75rem;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-2);
+  transition:
+    background-color 160ms ease-out,
+    color 160ms ease-out,
+    box-shadow 160ms ease-out;
+}
+.seg > button:hover {
+  color: var(--text-1);
+}
+.seg > button[aria-selected="true"],
+.seg > button[aria-pressed="true"],
+.seg > button[aria-checked="true"] {
+  background: #fff;
+  color: var(--sci);
+  font-weight: 600;
+  box-shadow:
+    0 1px 2px rgba(11, 31, 58, 0.12),
+    inset 0 0 0 1px var(--line-strong);
+}
+/* The hero switch: larger, and the one control that fills with the accent when active. */
+.seg-hero > button {
+  height: 2.25rem;
+  padding: 0 1.125rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.seg-hero > button[aria-checked="true"] {
+  background: var(--sci);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(8, 74, 140, 0.35);
+}
+
+.field {
+  width: 100%;
+  height: 2rem;
+  padding: 0 0.625rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text-1);
+  font-size: 0.8125rem;
+  transition:
+    border-color 160ms ease-out,
+    box-shadow 160ms ease-out;
+}
+.field::placeholder {
+  color: var(--text-3);
+}
+.field:hover {
+  border-color: #aab7c6;
+}
+.field:focus {
+  border-color: var(--sci);
+  box-shadow: 0 0 0 3px var(--sci-soft);
+  outline: none;
+}
+.field option {
+  background: #fff;
+}
+select.field {
+  appearance: none;
+  padding-right: 1.75rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b6a7e' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.625rem center;
+}
+
+/* Hatched "no active sensor" swatch, shared by legends. */
+.hatch {
+  background: repeating-linear-gradient(-45deg, #f4f6f9 0 3px, rgba(11, 31, 58, 0.3) 3px 4px);
+}
+
+/* ---------- Motion: the calendar rises once when a region opens ---------- */
+.rise {
+  animation: rise 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes rise {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise {
+    animation: none;
+  }
+}
+
+/* ---------- MapLibre chrome ---------- */
+.maplibregl-map {
+  background: var(--space);
+}
+.maplibregl-ctrl-attrib {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: var(--text-3) !important;
+  font-size: 10px !important;
+}
+.maplibregl-ctrl-group {
+  background: #fff !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--shadow-float) !important;
+  border-radius: 8px !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid var(--line) !important;
+}
+.maplibregl-ctrl-group button:hover {
+  background-color: var(--ink-2) !important;
+}
+

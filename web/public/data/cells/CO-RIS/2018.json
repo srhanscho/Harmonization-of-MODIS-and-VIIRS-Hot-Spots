@@ -1,0 +1,1 @@
+{"group":"CO-RIS","year":2018,"cell_size":0.1,"regions":["CO-RIS"],"null_months":[],"format":"[lon_center, lat_center, region_index, month, value, month, value, ...]","cells":[[-75.85,4.75,0,2,1],[-75.95,4.85,0,2,7,3,7,11,3,12,6],[-75.85,4.85,0,1,2,3,1,4,1],[-75.95,4.95,0,5,1],[-75.85,4.95,0,2,3,5,1,8,5,12,3],[-75.95,5.05,0,3,1]]}

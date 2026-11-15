@@ -1,0 +1,1 @@
+{"group":"CO-DC","year":2003,"cell_size":0.1,"regions":["CO-DC"],"null_months":[],"format":"[lon_center, lat_center, region_index, month, value, month, value, ...]","cells":[[-74.45,3.75,0,1,8,2,4],[-74.35,3.75,0,1,12],[-74.45,3.85,0,1,4],[-74.25,4.05,0,1,4],[-74.25,4.15,0,1,4],[-74.15,4.45,0,1,8],[-74.15,4.55,0,1,4,3,4]]}
