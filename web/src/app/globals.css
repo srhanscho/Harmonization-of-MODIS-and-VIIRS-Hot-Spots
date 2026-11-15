@@ -49,31 +49,31 @@
 }
 
 /*
-  Visual system: a light Earth-observation workbench. Cool off-white ground, white
-  instrument panels with crisp 1px rules and soft offset shadows, deep navy ink.
-  One science blue (--sci) carries every UI state (active, focus, selection); the
-  fire ramp in lib/palette.ts is reserved for data; --alert is the only warm UI hue.
+  Visual system: Cosmic Earth-observation workbench. Deep cosmic navy ground,
+  liquid glass instrument panels with neon cyan borders and glows, high-contrast white text.
+  Accent cyan (--sci) carries interactive UI states matching docs/code.html.
+  --space radial gradient is preserved for orbital backdrop.
 */
 :root {
-  --ink-0: #eef2f6; /* page ground */
-  --ink-1: #ffffff; /* panels */
-  --ink-2: #f4f6f9; /* inset controls */
-  --ink-3: #e7ecf2; /* hover / pressed */
-  --glass: #ffffff; /* floating over the map */
-  --glass-strong: #ffffff;
-  --line: #dde3ea;
-  --line-strong: #c4ceda;
-  --text-1: #0b1f3a;
-  --text-2: #3b4a60;
-  --text-3: #5b6a7e;
-  --sci: #0b5cad;
-  --sci-strong: #084a8c;
-  --sci-soft: rgba(11, 92, 173, 0.09);
-  --alert: #b93a0e;
+  --ink-0: #030816; /* page ground matching code.html */
+  --ink-1: rgba(8, 20, 42, 0.88); /* liquid glass panels */
+  --ink-2: rgba(13, 27, 56, 0.75); /* inset glass controls */
+  --ink-3: rgba(20, 45, 90, 0.7); /* hover / pressed */
+  --glass: linear-gradient(135deg, rgba(13, 27, 56, 0.85) 0%, rgba(6, 16, 36, 0.9) 100%);
+  --glass-strong: linear-gradient(135deg, rgba(15, 32, 65, 0.92) 0%, rgba(8, 20, 45, 0.95) 100%);
+  --line: rgba(56, 189, 248, 0.22);
+  --line-strong: rgba(56, 189, 248, 0.4);
+  --text-1: #f1f5f9;
+  --text-2: #cbd5e1;
+  --text-3: #94a3b8;
+  --sci: #00d2ff;
+  --sci-strong: #0284c7;
+  --sci-soft: rgba(0, 210, 255, 0.15);
+  --alert: #ff4b4b;
   --space: radial-gradient(120% 90% at 50% 38%, #1f3f6b 0%, #102a4f 42%, #081a33 78%, #06142a 100%);
-  --shadow-float: 0 1px 2px rgba(11, 31, 58, 0.06), 0 10px 28px -12px rgba(11, 31, 58, 0.28);
+  --shadow-float: 0 10px 35px -5px rgba(0, 0, 0, 0.75), 0 0 15px 1px rgba(6, 182, 212, 0.15);
 
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --background: var(--ink-0);
   --foreground: var(--text-1);
   --card: var(--ink-1);
@@ -81,7 +81,7 @@
   --popover: var(--ink-1);
   --popover-foreground: var(--text-1);
   --primary: var(--sci);
-  --primary-foreground: #ffffff;
+  --primary-foreground: #030816;
   --secondary: var(--ink-2);
   --secondary-foreground: var(--text-1);
   --muted: var(--ink-2);
@@ -100,7 +100,7 @@
   --sidebar: var(--ink-1);
   --sidebar-foreground: var(--text-1);
   --sidebar-primary: var(--sci);
-  --sidebar-primary-foreground: #ffffff;
+  --sidebar-primary-foreground: #030816;
   --sidebar-accent: var(--ink-3);
   --sidebar-accent-foreground: var(--text-1);
   --sidebar-border: var(--line);
@@ -126,6 +126,22 @@
   :focus-visible {
     outline: 2px solid var(--sci);
     outline-offset: 2px;
+  }
+
+  /* Custom dark scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(3, 8, 22, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.25);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 210, 255, 0.5);
   }
 }
 
@@ -162,19 +178,38 @@
 /* ---------- Surfaces ---------- */
 .panel {
   background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 16px;
   box-shadow: var(--shadow-float);
+  color: var(--text-1);
 }
 .panel-solid {
   background: var(--glass-strong);
 }
-/* Small white label chip for text that sits directly on imagery. */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(13, 27, 56, 0.8) 0%, rgba(6, 16, 36, 0.85) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 0 10px 35px -5px rgba(0, 0, 0, 0.7), 0 0 15px 1px rgba(6, 182, 212, 0.12);
+}
+.glass-pill {
+  background: rgba(15, 29, 58, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+/* Small label chip for text that sits directly on imagery. */
 .chip {
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(8, 20, 42, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  box-shadow: 0 1px 2px rgba(11, 31, 58, 0.08);
+  border-radius: 9999px;
+  color: var(--text-2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 /* ---------- Controls ---------- */
@@ -182,30 +217,34 @@
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  height: 2rem;
-  padding: 0 0.75rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  background: var(--ink-1);
+  height: 2.25rem;
+  padding: 0 0.875rem;
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+  background: rgba(13, 27, 56, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--text-1);
   font-size: 0.8125rem;
   font-weight: 500;
   white-space: nowrap;
-  transition:
-    background-color 160ms ease-out,
-    border-color 160ms ease-out,
-    color 160ms ease-out;
+  transition: all 180ms ease-out;
 }
 .btn:hover:not(:disabled) {
-  background: var(--ink-2);
-  border-color: #aab7c6;
+  background: rgba(20, 45, 90, 0.8);
+  border-color: rgba(56, 189, 248, 0.5);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(0, 210, 255, 0.25);
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 .btn:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 .btn-icon {
-  width: 2rem;
+  width: 2.25rem;
   padding: 0;
   justify-content: center;
 }
@@ -213,107 +252,115 @@
   border-color: transparent;
   background: transparent;
   color: var(--text-2);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 .btn-quiet:hover:not(:disabled) {
-  color: var(--text-1);
-  background: var(--ink-3);
-  border-color: transparent;
+  color: #fff;
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.25);
+  box-shadow: none;
 }
 .btn-primary {
-  background: var(--sci);
-  border-color: var(--sci);
-  color: #fff;
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.95) 0%, rgba(2, 132, 199, 0.95) 100%);
+  border-color: rgba(56, 189, 248, 0.6);
+  color: #030816;
+  font-weight: 600;
+  box-shadow: 0 0 16px rgba(0, 210, 255, 0.35);
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--sci-strong);
-  border-color: var(--sci-strong);
+  background: linear-gradient(135deg, #00d2ff 0%, #0369a1 100%);
+  border-color: #38bdf8;
+  color: #010309;
+  box-shadow: 0 0 22px rgba(0, 210, 255, 0.55);
 }
 
 /* Segmented control: tabs, language, Raw/Harmonized. */
 .seg {
   display: inline-flex;
-  padding: 2px;
-  gap: 2px;
+  padding: 3px;
+  gap: 3px;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--ink-2);
+  border-radius: 9999px;
+  background: rgba(6, 16, 36, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 .seg > button {
-  height: 1.75rem;
-  padding: 0 0.75rem;
-  border-radius: 6px;
+  height: 1.875rem;
+  padding: 0 0.875rem;
+  border-radius: 9999px;
   font-size: 0.8125rem;
   font-weight: 500;
   color: var(--text-2);
-  transition:
-    background-color 160ms ease-out,
-    color 160ms ease-out,
-    box-shadow 160ms ease-out;
+  transition: all 160ms ease-out;
 }
 .seg > button:hover {
-  color: var(--text-1);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
 }
 .seg > button[aria-selected="true"],
 .seg > button[aria-pressed="true"],
 .seg > button[aria-checked="true"] {
-  background: #fff;
-  color: var(--sci);
+  background: linear-gradient(135deg, rgba(0, 210, 255, 0.25) 0%, rgba(2, 132, 199, 0.35) 100%);
+  color: #38bdf8;
   font-weight: 600;
-  box-shadow:
-    0 1px 2px rgba(11, 31, 58, 0.12),
-    inset 0 0 0 1px var(--line-strong);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 12px rgba(0, 210, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 /* The hero switch: larger, and the one control that fills with the accent when active. */
 .seg-hero > button {
   height: 2.25rem;
-  padding: 0 1.125rem;
+  padding: 0 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
 }
 .seg-hero > button[aria-checked="true"] {
-  background: var(--sci);
-  color: #fff;
-  box-shadow: 0 1px 3px rgba(8, 74, 140, 0.35);
+  background: linear-gradient(135deg, #00d2ff 0%, #0284c7 100%);
+  color: #030816;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 18px rgba(0, 210, 255, 0.5);
 }
 
 .field {
   width: 100%;
-  height: 2rem;
-  padding: 0 0.625rem;
-  border: 1px solid var(--line-strong);
-  border-radius: 6px;
-  background: #fff;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(8, 23, 48, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--text-1);
   font-size: 0.8125rem;
-  transition:
-    border-color 160ms ease-out,
-    box-shadow 160ms ease-out;
+  transition: all 160ms ease-out;
 }
 .field::placeholder {
   color: var(--text-3);
 }
 .field:hover {
-  border-color: #aab7c6;
+  border-color: rgba(56, 189, 248, 0.45);
 }
 .field:focus {
   border-color: var(--sci);
-  box-shadow: 0 0 0 3px var(--sci-soft);
+  box-shadow: 0 0 15px rgba(0, 210, 255, 0.28);
   outline: none;
 }
 .field option {
-  background: #fff;
+  background: #061228;
+  color: #f1f5f9;
 }
 select.field {
   appearance: none;
   padding-right: 1.75rem;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b6a7e' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2338bdf8' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 0.625rem center;
 }
 
 /* Hatched "no active sensor" swatch, shared by legends. */
 .hatch {
-  background: repeating-linear-gradient(-45deg, #f4f6f9 0 3px, rgba(11, 31, 58, 0.3) 3px 4px);
+  background: repeating-linear-gradient(-45deg, rgba(13, 27, 56, 0.85) 0 3px, rgba(56, 189, 248, 0.3) 3px 4px);
 }
 
 /* ---------- Motion: the calendar rises once when a region opens ---------- */
@@ -337,24 +384,96 @@ select.field {
 }
 
 /* ---------- MapLibre chrome ---------- */
+/*
+  Deep space behind the globe: NASA/Goddard SVS Deep Star Maps / Tycho Sky Map II in celestial
+  coordinates (TychoSkymapII.t5_08192x04096.jpg, 8192x4096, public domain). MapLibre clears its
+  canvas to transparent outside the globe (the sky shader fades out from orbit), so this layer
+  shows through. GlobeMap drives --stars-x/-y from the camera so the sky drifts as the Earth turns.
+*/
 .maplibregl-map {
-  background: var(--space);
+  background: #010309;
+}
+.maplibregl-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(120% 90% at 50% 45%, rgba(1, 3, 9, 0) 55%, rgba(1, 3, 9, 0.55) 100%),
+    url("/space/TychoSkymapII.t5_08192x04096.jpg");
+  background-size: cover, auto 140%;
+  background-repeat: no-repeat, repeat-x;
+  background-position: center, var(--stars-x, 50%) var(--stars-y, 50%);
+  filter: brightness(1.5) contrast(1.15) saturate(1.15);
 }
 .maplibregl-ctrl-attrib {
   background: rgba(255, 255, 255, 0.85) !important;
   color: var(--text-3) !important;
   font-size: 10px !important;
 }
+.maplibregl-ctrl-top-right {
+  top: 5.5rem !important;
+  right: 1.25rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+}
+
 .maplibregl-ctrl-group {
-  background: #fff !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: var(--shadow-float) !important;
-  border-radius: 8px !important;
+  background: linear-gradient(135deg, rgba(13, 27, 56, 0.85) 0%, rgba(6, 16, 36, 0.9) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(56, 189, 248, 0.25) !important;
+  box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.5), 0 0 12px 1px rgba(6, 182, 212, 0.12) !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+  transition: border-color 200ms ease, box-shadow 200ms ease, transform 150ms ease !important;
 }
-.maplibregl-ctrl-group button + button {
-  border-top: 1px solid var(--line) !important;
+
+.maplibregl-ctrl-group:hover {
+  border-color: rgba(56, 189, 248, 0.5) !important;
+  box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.65), 0 0 16px 2px rgba(6, 182, 212, 0.22) !important;
 }
+
+.maplibregl-ctrl-group button {
+  width: 36px !important;
+  height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: transparent !important;
+  transition: background-color 160ms ease, transform 100ms ease !important;
+  outline: none !important;
+}
+
 .maplibregl-ctrl-group button:hover {
-  background-color: var(--ink-2) !important;
+  background-color: rgba(56, 189, 248, 0.18) !important;
+}
+
+.maplibregl-ctrl-group button:active {
+  transform: scale(0.92) !important;
+  background-color: rgba(56, 189, 248, 0.28) !important;
+}
+
+.maplibregl-ctrl-group button + button {
+  border-top: 1px solid rgba(56, 189, 248, 0.15) !important;
+}
+
+/* Iconos blancos nítidos con brillo en hover */
+.maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4)) !important;
+  transform: scale(0.95) !important;
+  transition: filter 160ms ease, transform 160ms ease !important;
+}
+
+.maplibregl-ctrl-group button:hover .maplibregl-ctrl-icon {
+  transform: scale(1.05) !important;
+  filter: brightness(0) invert(1) drop-shadow(0 0 5px rgba(0, 210, 255, 0.8)) !important;
+}
+
+/* Icono de globo cuando está habilitado (glow cian satelital) */
+.maplibregl-ctrl-group button.maplibregl-ctrl-globe-enabled .maplibregl-ctrl-icon {
+  filter: drop-shadow(0 0 6px rgba(0, 210, 255, 0.95)) brightness(1.2) !important;
 }
 

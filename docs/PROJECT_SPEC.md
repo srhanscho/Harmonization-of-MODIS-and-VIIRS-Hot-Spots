@@ -13,7 +13,7 @@ El reto pide, en sus propias palabras, que "the sensor of origin no longer matte
 
 ## 1. Reglas no negociables
 
-1. **Nada de marca NASA.** Sin logo de la NASA, sin "meatball" y sin llamar a la aplicación "FIRMS" ni "Sistema de Información sobre Incendios FIRMS". El nombre del proyecto lo decide el equipo; en el código se usa el marcador `[PROJECT_NAME]`. En la sección de créditos sí se cita "Data: NASA FIRMS" como fuente.
+1. **Nada de marca NASA.** Sin logo de la NASA, sin "meatball" y sin llamar a la aplicación "FIRMS" ni "Sistema de Información sobre Incendios FIRMS". El nombre del proyecto es **K-Fire**. En la sección de créditos sí se cita "Data: NASA FIRMS" como fuente.
 2. **Interfaz en inglés por defecto**, con selector de idioma ES. Las reglas de entrega exigen inglés.
 3. **No mostrar hectáreas ni "área quemada" calculadas a partir de puntos de calor.** No existe metodología válida para eso. Las métricas son detecciones, celdas-día con fuego y FRP, siempre rotuladas por separado.
 4. **Observado frente a estimado.** Todo valor armonizado se rotula como estimado e incluye su incertidumbre. Los valores crudos se rotulan como observados.
@@ -150,7 +150,7 @@ Rendimiento: la rotación automática se detiene cuando el usuario interactúa. 
 
 ### 6.2 Elementos de pantalla
 
-- **Encabezado HUD** (sobre el mapa, sin barra sólida): `[PROJECT_NAME]` con tipografía espaciada, la frase "Did the fire change, or the satellite?", el selector EN/ES y la pestaña "Method".
+- **Encabezado HUD** (sobre el mapa, sin barra sólida): `K-Fire` con tipografía espaciada, la frase "Did the fire change, or the satellite?", el selector EN/ES y la pestaña "Method".
 - **Mini globo** en la esquina inferior izquierda, con la región seleccionada resaltada, la fecha activa del calendario y las coordenadas del centro.
 - **Barra lateral derecha de contadores** (estilo HUD, cifras grandes): detecciones armonizadas del período, anomalía frente a la mediana (percentil), mes pico, año récord y **satélites activos en la fecha elegida** (Terra, Aqua, S-NPP, NOAA-20). Cada capa tiene un control de visibilidad (icono de ojo): MODIS crudo, VIIRS crudo, armonizado, límites, fondo satelital.
 - **Panel izquierdo:** selector de región (país → departamento/provincia), casos demo con un clic, rango de años y entrada de lat/lon.

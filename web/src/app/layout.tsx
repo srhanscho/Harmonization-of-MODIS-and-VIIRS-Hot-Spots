@@ -6,9 +6,14 @@ import "./globals.css";
 const publicSans = Public_Sans({ variable: "--font-sans", subsets: ["latin", "latin-ext"] });
 
 export const metadata: Metadata = {
-  title: "[PROJECT_NAME] — Harmonized MODIS + VIIRS burning calendar",
+  title: "K-Fire — Harmonized MODIS + VIIRS burning calendar",
   description:
     "Did the fire change, or the satellite? A harmonized month-by-year calendar of fire activity from MODIS and VIIRS hot spots.",
+  icons: {
+    icon: "/logok-fire.png",
+    shortcut: "/logok-fire.png",
+    apple: "/logok-fire.png",
+  },
 };
 
 export const viewport: Viewport = { themeColor: "#eef2f6", colorScheme: "light" };

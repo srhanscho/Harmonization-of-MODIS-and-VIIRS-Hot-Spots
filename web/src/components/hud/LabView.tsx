@@ -263,13 +263,13 @@ function OutlookChart({ f, rows, c }: { f: Forecast; rows: MonthlyRow[] | null; 
 
 function Metric({ label, value, sub, info }: { label: string; value: string; sub?: string; info?: DictKey }) {
   return (
-    <div className="rounded-lg border border-[var(--line)] px-3 py-2.5">
-      <p className="t-label flex items-center gap-1">
+    <div className="rounded-xl border border-cyan-500/25 bg-[rgba(8,23,48,0.65)] px-3.5 py-3 shadow-sm">
+      <p className="t-label flex items-center gap-1 text-slate-300">
         {label}
         {info && <InfoTip k={info} label={label} />}
       </p>
-      <p className="t-figure num mt-1 !text-[22px]">{value}</p>
-      {sub && <p className="t-caption num mt-0.5">{sub}</p>}
+      <p className="t-figure num mt-1 !text-[24px] font-bold text-white">{value}</p>
+      {sub && <p className="t-caption num mt-0.5 text-cyan-300/80">{sub}</p>}
     </div>
   );
 }
@@ -291,33 +291,33 @@ export function LabView() {
   const trainEnd = f?.metrics.train_end;
 
   return (
-    <article className="panel panel-solid pointer-events-auto mx-auto max-h-full w-full max-w-5xl overflow-y-auto px-5 py-6 text-[14px] leading-relaxed text-[var(--text-2)] sm:px-8 sm:py-7">
+    <article className="glass-panel pointer-events-auto mx-auto max-h-full w-full max-w-5xl overflow-y-auto rounded-2xl px-6 py-6 text-[14px] leading-relaxed text-slate-200 sm:px-8 sm:py-7">
       <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
         <div className="min-w-0">
-          <h2 className="text-[24px] leading-tight font-semibold tracking-[-0.02em] text-[var(--text-1)]">
+          <h2 className="text-[26px] leading-tight font-bold tracking-tight text-white">
             {c.title}
-            {region && <span className="ml-2 text-[16px] font-normal tracking-normal text-[var(--text-3)]">{region.name}</span>}
+            {region && <span className="ml-2 text-[17px] font-normal tracking-normal text-cyan-300">{region.name}</span>}
           </h2>
           {f?.model && (
-            <p className="t-caption mt-1">
-              {c.model}: <span className="text-[var(--text-2)]">{f.model}</span>
+            <p className="t-caption mt-1 text-slate-400">
+              {c.model}: <span className="font-mono text-cyan-200">{f.model}</span>
             </p>
           )}
         </div>
         {f && f.outlook.length > 0 && (
           <div className="flex items-center gap-2 text-[12px]">
-            <span className="t-caption">{c.worst}</span>
+            <span className="t-caption text-slate-400">{c.worst}</span>
             <AlertBadge level={worst} c={c} />
           </div>
         )}
       </div>
-      <p className="mt-3 inline-flex items-center gap-2 rounded-md border border-[var(--line-strong)] px-2.5 py-1 text-[12px] font-medium text-[var(--text-1)]">
-        <FlaskConical className="size-3.5 text-[var(--text-3)]" aria-hidden />
+      <p className="mt-3.5 inline-flex items-center gap-2 rounded-full border border-amber-400/35 bg-amber-500/10 px-3 py-1 text-[12px] font-semibold text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.15)]">
+        <FlaskConical className="size-3.5 text-amber-400" aria-hidden />
         {c.experimental}
       </p>
 
       {!state.regionId ? (
-        <p className="mt-6 text-[var(--text-2)]">{c.pick}</p>
+        <p className="mt-6 text-slate-300">{c.pick}</p>
       ) : !f ? (
         <div className="mt-4">
           <DataState result={res} file={`/data/forecast/${state.regionId}.json`} />
@@ -325,9 +325,9 @@ export function LabView() {
       ) : (
         <>
           <section className="mt-7">
-            <h3 className="text-[16px] font-semibold tracking-[-0.01em] text-[var(--text-1)]">{c.backtest}</h3>
-            <p className="mt-1 max-w-[72ch] text-[13px]">{c.backtestBody}</p>
-            <div className="mt-4 grid grid-cols-2 gap-2 md:grid-cols-4">
+            <h3 className="text-[17px] font-bold tracking-tight text-white">{c.backtest}</h3>
+            <p className="mt-1 max-w-[72ch] text-[13.5px] text-slate-300">{c.backtestBody}</p>
+            <div className="mt-4 grid grid-cols-2 gap-2.5 md:grid-cols-4">
               <Metric label={c.mape} value={pct(f.metrics.mape)} info="infoMape" />
               <Metric label={fill(c.coverage, iv)} value={pct(f.metrics.coverage)} sub={fill(c.nominal, iv)} info="infoCoverage" />
               <Metric label={c.testMonths} value={fmt(f.metrics.n_test ?? f.backtest.length, 0)} />
@@ -336,24 +336,24 @@ export function LabView() {
             {f.backtest.length > 0 && (
               <div className="mt-3">
                 <BacktestChart f={f} rows={a.rows} c={c} />
-                <p className="t-caption">{c.unit}</p>
+                <p className="t-caption text-slate-400">{c.unit}</p>
               </div>
             )}
           </section>
 
           <section className="mt-8">
-            <h3 className="flex items-center gap-1.5 text-[16px] font-semibold tracking-[-0.01em] text-[var(--text-1)]">
+            <h3 className="flex items-center gap-1.5 text-[17px] font-bold tracking-tight text-white">
               {c.outlook} <InfoTip k="infoOutlook" label={c.outlook} />
             </h3>
-            <p className="mt-1 max-w-[72ch] text-[13px]">{c.outlookBody}</p>
+            <p className="mt-1 max-w-[72ch] text-[13.5px] text-slate-300">{c.outlookBody}</p>
             {f.outlook.length === 0 ? (
-              <p className="mt-3 text-[13px] text-[var(--text-3)]">{c.noOutlook}</p>
+              <p className="mt-3 text-[13px] text-slate-400">{c.noOutlook}</p>
             ) : (
               <div className="mt-3 grid gap-x-6 gap-y-3 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
                 <OutlookChart f={f} rows={a.rows} c={c} />
                 <div className="min-w-0 overflow-x-auto">
                   <table className="num w-full text-xs">
-                    <thead className="text-[var(--text-3)]">
+                    <thead className="text-slate-400">
                       <tr>
                         <th className="py-1 text-left font-normal">{c.month}</th>
                         <th className="text-right font-normal">{c.expected}</th>
@@ -365,16 +365,16 @@ export function LabView() {
                     </thead>
                     <tbody>
                       {f.outlook.map((o) => (
-                        <tr key={`${o.year}-${o.month}`} className="border-t border-[var(--line)]">
-                          <td className="py-1.5 whitespace-nowrap text-[var(--text-1)]">
+                        <tr key={`${o.year}-${o.month}`} className="border-t border-cyan-500/20">
+                          <td className="py-1.5 whitespace-nowrap font-medium text-white">
                             {monthShort(o.month)} {o.year}
                           </td>
-                          <td className="text-right">{fmt(o.predicted, 0)}</td>
-                          <td className="text-right whitespace-nowrap text-[var(--text-3)]">
+                          <td className="text-right font-semibold text-cyan-200">{fmt(o.predicted, 0)}</td>
+                          <td className="text-right whitespace-nowrap text-slate-400">
                             {fmt(o.lo, 0)}–{fmt(o.hi, 0)}
                           </td>
-                          <td className="text-right">{pct(o.p_above_z1)}</td>
-                          <td className="text-right">{pct(o.p_above_z2)}</td>
+                          <td className="text-right text-slate-300">{pct(o.p_above_z1)}</td>
+                          <td className="text-right text-slate-300">{pct(o.p_above_z2)}</td>
                           <td className="pl-3">
                             <AlertBadge level={o.alert} c={c} />
                           </td>
@@ -382,8 +382,8 @@ export function LabView() {
                       ))}
                     </tbody>
                   </table>
-                  <p className="t-caption mt-2">{c.thresholds}</p>
-                  <p className="t-caption mt-1 font-medium !text-[var(--text-2)]">{c.experimental}</p>
+                  <p className="t-caption mt-2 text-slate-400">{c.thresholds}</p>
+                  <p className="t-caption mt-1 font-medium text-slate-300">{c.experimental}</p>
                 </div>
               </div>
             )}

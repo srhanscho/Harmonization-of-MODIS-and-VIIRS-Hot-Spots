@@ -30,8 +30,8 @@ interface Props {
   onSelect: (year: number, month: number, at?: { x: number; y: number }) => void;
 }
 
-// Sensor regimes: three steps of the warm neutral ramp (they describe the instrument, not fire).
-const REGIME_COLORS: Record<string, string> = { R1: "#e3e8ee", R2: "#c3cdd9", R3: "#93a3b7" };
+// Sensor regimes: three steps of the dark slate/cyan ramp (they describe the instrument, not fire).
+const REGIME_COLORS: Record<string, string> = { R1: "rgba(56, 189, 248, 0.15)", R2: "rgba(56, 189, 248, 0.28)", R3: "rgba(56, 189, 248, 0.45)" };
 const GAP = UI.cellGap;
 const PHASES: EnsoPhase[] = ["neutral", "el_nino", "la_nina"];
 

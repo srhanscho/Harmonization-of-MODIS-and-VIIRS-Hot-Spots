@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
@@ -71,6 +72,7 @@ const COPY = {
       "Wind (WS10M, WD10M): NASA POWER, monthly.",
       "Basemap: Sentinel-2 cloudless by EOX (non-commercial use, CC BY-NC-SA 4.0).",
       "Vector boundaries: © OpenFreeMap © OpenStreetMap contributors.",
+      "Star field: NASA/Goddard Space Flight Center Scientific Visualization Studio, Deep Star Maps (Tycho-2 & Hipparcos), public domain.",
       "AI assistant: Claude (Anthropic) via tool calling over the published JSON files. Answers are labeled AI-generated.",
     ],
   },
@@ -132,6 +134,7 @@ const COPY = {
       "Viento (WS10M, WD10M): NASA POWER, mensual.",
       "Mapa base: Sentinel-2 cloudless by EOX (uso no comercial, CC BY-NC-SA 4.0).",
       "Límites vectoriales: © OpenFreeMap © OpenStreetMap contributors.",
+      "Campo de estrellas: NASA/Goddard Space Flight Center Scientific Visualization Studio, Deep Star Maps (Tycho-2 e Hipparcos), dominio público.",
       "Asistente de IA: Claude (Anthropic) con herramientas sobre los JSON publicados. Las respuestas se rotulan como generadas por IA.",
     ],
   },
@@ -151,18 +154,18 @@ const FORMULAS: ReactNode[] = [
   </>,
   <span key="eq2" className="flex flex-col gap-1.5">
     <span>
-    ln FRP<sub>VIIRS</sub> = ln <V>α</V>
-    <sub>r</sub> + <V>β</V>
-    <sub>r</sub> · ln FRP<sub>MODIS</sub>
+      ln FRP<sub>VIIRS</sub> = ln <V>α</V>
+      <sub>r</sub> + <V>β</V>
+      <sub>r</sub> · ln FRP<sub>MODIS</sub>
     </span>
     <span>
-    <span className="mr-2 text-[var(--text-3)]">⇒</span>
-    FRP&#770; = <V>α</V>
-    <sub>r</sub> · FRP<sub>MODIS</sub>
-    <sup>
-      <V>β</V>
-      <sub>r</sub>
-    </sup>
+      <span className="mr-2 text-[var(--text-3)]">⇒</span>
+      FRP&#770; = <V>α</V>
+      <sub>r</sub> · FRP<sub>MODIS</sub>
+      <sup>
+        <V>β</V>
+        <sub>r</sub>
+      </sup>
     </span>
   </span>,
   <>

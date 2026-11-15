@@ -55,12 +55,12 @@ const N_VIIRS = VCELLS.filter((c) => c.on).length;
 function Panel({ dx, title, sub, land, clip, children }: { dx: number; title: string; sub: string; land: string; clip: string; children: React.ReactNode }) {
   return (
     <g transform={`translate(${dx},0)`}>
-      <rect x="0.5" y="0.5" width={PANEL - 1} height={PANEL - 1} rx="8" fill={`url(#${land})`} stroke="#c4ceda" />
+      <rect x="0.5" y="0.5" width={PANEL - 1} height={PANEL - 1} rx="10" fill={`url(#${land})`} stroke="rgba(56, 189, 248, 0.35)" />
       <g clipPath={`url(#${clip})`}>{children}</g>
-      <text x="14" y="24" fontSize="13" fontWeight="600" fill="#0b1f3a">
+      <text x="14" y="24" fontSize="13" fontWeight="600" fill="#f1f5f9">
         {title}
       </text>
-      <text x="14" y="41" fontSize="11" fill="#5b6a7e">
+      <text x="14" y="41" fontSize="11" fill="#94a3b8">
         {sub}
       </text>
     </g>
@@ -93,57 +93,57 @@ export function TwoSensors({ compact = false }: { compact?: boolean }) {
             <stop offset="1" stopColor="#a8161b" />
           </radialGradient>
           <linearGradient id={land} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="#eef1e4" />
-            <stop offset="1" stopColor="#e2e8d6" />
+            <stop offset="0" stopColor="#0a1a36" />
+            <stop offset="1" stopColor="#051024" />
           </linearGradient>
           <clipPath id={clip}>
-            <rect x="1" y="1" width={PANEL - 2} height={PANEL - 2} rx="7.5" />
+            <rect x="1" y="1" width={PANEL - 2} height={PANEL - 2} rx="9.5" />
           </clipPath>
         </defs>
 
         {/* MODIS: one 1 km pixel swallows the whole fire. */}
         <Panel dx={0} land={land} clip={clip} title={t("twoSensorsModis")} sub={t("twoSensorsModisSub")}>
           {[-1, 0, 1].map((k) => (
-            <g key={k} stroke="rgba(11,31,58,0.13)" strokeWidth="1" strokeDasharray="3 3">
+            <g key={k} stroke="rgba(56, 189, 248, 0.2)" strokeWidth="1" strokeDasharray="3 3">
               <line x1={CX - KM / 2 + k * KM} y1="0" x2={CX - KM / 2 + k * KM} y2={PANEL} />
               <line x1="0" y1={CY - KM / 2 + k * KM} x2={PANEL} y2={CY - KM / 2 + k * KM} />
             </g>
           ))}
-          <rect x={CX - KM / 2} y={CY - KM / 2} width={KM} height={KM} fill={SENSOR.modis} fillOpacity="0.12" />
+          <rect x={CX - KM / 2} y={CY - KM / 2} width={KM} height={KM} fill={SENSOR.modis} fillOpacity="0.18" />
           {fire}
-          <rect x={CX - KM / 2} y={CY - KM / 2} width={KM} height={KM} fill="none" stroke="rgba(11,31,58,0.45)" strokeWidth="5" />
+          <rect x={CX - KM / 2} y={CY - KM / 2} width={KM} height={KM} fill="none" stroke="rgba(56, 189, 248, 0.4)" strokeWidth="4" />
           <rect x={CX - KM / 2} y={CY - KM / 2} width={KM} height={KM} fill="none" stroke={SENSOR.modis} strokeWidth="2.5" />
         </Panel>
 
         {/* VIIRS: the 375 m lattice flags every pixel the fire touches. */}
         <Panel dx={PANEL + 40} land={land} clip={clip} title={t("twoSensorsViirs")} sub={t("twoSensorsViirsSub")}>
           {VCELLS.map((c, i) => (
-            <rect key={i} x={c.x} y={c.y} width={V} height={V} fill="none" stroke="rgba(11,31,58,0.13)" strokeDasharray="3 3" />
+            <rect key={i} x={c.x} y={c.y} width={V} height={V} fill="none" stroke="rgba(56, 189, 248, 0.2)" strokeDasharray="3 3" />
           ))}
           {fire}
           {VCELLS.filter((c) => c.on).map((c, i) => (
-            <rect key={i} x={c.x + 1} y={c.y + 1} width={V - 2} height={V - 2} fill="#d3301f" fillOpacity="0.55" stroke="#fff" strokeWidth="1.5" />
+            <rect key={i} x={c.x + 1} y={c.y + 1} width={V - 2} height={V - 2} fill="#d3301f" fillOpacity="0.65" stroke="#fff" strokeWidth="1.5" />
           ))}
-          <path d={FIRE_PATH} fill="none" stroke="rgba(11,31,58,0.55)" strokeWidth="1" strokeDasharray="2 2" />
+          <path d={FIRE_PATH} fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="1" strokeDasharray="2 2" />
         </Panel>
 
         {/* Counts under each panel. */}
-        <g fontSize="13" fill="#0b1f3a">
+        <g fontSize="13" fill="#f1f5f9">
           <text x={PANEL / 2} y={PANEL + 30} textAnchor="middle" fontWeight="600">
             {t("twoSensorsOne")}
           </text>
           <text x={PANEL * 1.5 + 40} y={PANEL + 30} textAnchor="middle" fontWeight="600">
             {t("twoSensorsMany", { n: N_VIIRS })}
           </text>
-          <text x={PANEL + 20} y={CY + 5} textAnchor="middle" fontSize="18" fill="#5b6a7e">
+          <text x={PANEL + 20} y={CY + 5} textAnchor="middle" fontSize="18" fill="#00d2ff">
             =
           </text>
         </g>
         {/* Scale bar: 1 km. */}
-        <g transform={`translate(14 ${PANEL - 18})`} fontSize="10" fill="#3b4a60">
-          <line x1="0" y1="0" x2={KM / 2} y2="0" stroke="#0b1f3a" strokeWidth="1.5" />
-          <line x1="0" y1="-4" x2="0" y2="4" stroke="#0b1f3a" strokeWidth="1.5" />
-          <line x1={KM / 2} y1="-4" x2={KM / 2} y2="4" stroke="#0b1f3a" strokeWidth="1.5" />
+        <g transform={`translate(14 ${PANEL - 18})`} fontSize="10" fill="#94a3b8">
+          <line x1="0" y1="0" x2={KM / 2} y2="0" stroke="#38bdf8" strokeWidth="1.5" />
+          <line x1="0" y1="-4" x2="0" y2="4" stroke="#38bdf8" strokeWidth="1.5" />
+          <line x1={KM / 2} y1="-4" x2={KM / 2} y2="4" stroke="#38bdf8" strokeWidth="1.5" />
           <text x={KM / 4} y="-6" textAnchor="middle">
             500 m
           </text>

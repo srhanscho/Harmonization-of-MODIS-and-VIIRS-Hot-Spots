@@ -43,28 +43,28 @@ export function ClimateCard({ regionId }: { regionId: string }) {
   const e = res?.status === "ok" ? res.data.enso : null;
 
   return (
-    <section aria-label={t("climateLink")} className="border-t border-[var(--line)] px-4 pt-3 pb-3.5">
-      <h2 className="t-label mb-1.5 flex items-center gap-1">
+    <section aria-label={t("climateLink")} className="border-t border-cyan-500/20 px-5 pt-3.5 pb-4">
+      <h2 className="mb-2 flex items-center gap-1 text-[11px] font-semibold tracking-wider text-cyan-300 uppercase">
         {t("climateLink")} <InfoTip k="infoEnso" label={t("climateLink")} />
       </h2>
       {res == null ? (
-        <p className="t-caption">{t("loading")}</p>
+        <p className="t-caption text-slate-400">{t("loading")}</p>
       ) : !e || e.r == null ? (
-        <p className="t-caption">{c.missing}</p>
+        <p className="t-caption text-slate-400">{c.missing}</p>
       ) : (
-        <div className="flex flex-col gap-2">
-          <p className="text-[13px] leading-snug text-[var(--text-1)]">
+        <div className="flex flex-col gap-2.5">
+          <p className="text-[13.5px] leading-relaxed text-slate-200">
             {c.explains(
               region?.name ?? regionId,
               `${fmt(e.r * e.r * 100, 0)}%`,
               c.lag(e.best_lag ?? 0),
             )}{" "}
-            <span className="text-[var(--text-2)]">{Math.abs(e.r) < 0.2 ? c.weak : e.r > 0 ? c.up : c.down}</span>
+            <span className="text-cyan-300 font-medium">{Math.abs(e.r) < 0.2 ? c.weak : e.r > 0 ? c.up : c.down}</span>
           </p>
           {(e.mean_z_el_nino != null || e.mean_z_la_nina != null) && (
             <div>
-              <p className="t-caption mb-1">{c.meanZ}</p>
-              <dl className="num grid grid-cols-3 gap-1.5">
+              <p className="t-caption mb-1.5 text-slate-400">{c.meanZ}</p>
+              <dl className="num grid grid-cols-3 gap-2">
                 {(
                   [
                     ["el_nino", t("elNino"), e.mean_z_el_nino],
@@ -72,25 +72,25 @@ export function ClimateCard({ regionId }: { regionId: string }) {
                     ["la_nina", t("laNina"), e.mean_z_la_nina],
                   ] as const
                 ).map(([k, label, v]) => (
-                  <div key={k} className="min-w-0 rounded-md border border-[var(--line)] px-1.5 py-1.5">
-                    <dt className="flex items-center gap-1 text-[10.5px] whitespace-nowrap text-[var(--text-3)]">
+                  <div key={k} className="min-w-0 rounded-xl border border-cyan-500/25 bg-[rgba(8,23,48,0.65)] px-2.5 py-2 shadow-sm">
+                    <dt className="flex items-center gap-1 text-[10.5px] whitespace-nowrap text-slate-300">
                       <span className="h-[3px] w-3 rounded-full" style={{ background: ENSO[k] }} aria-hidden />
                       {label}
                     </dt>
-                    <dd className="mt-0.5 text-[14px] font-medium text-[var(--text-1)]">{fmtSigned(v, 2)}</dd>
+                    <dd className="mt-0.5 text-[15px] font-bold text-white">{fmtSigned(v, 2)}</dd>
                   </div>
                 ))}
               </dl>
             </div>
           )}
-          <p className="t-caption num">
+          <p className="t-caption num text-slate-400">
             {c.stats(
               fmt(e.r, 2),
               fmt(e.n, 0),
               e.p == null ? "—" : e.p < 0.001 ? "< 0.001" : `= ${fmt(e.p, 3)}`,
             )}
           </p>
-          <p className="t-caption">{c.caveat}</p>
+          <p className="t-caption text-slate-400">{c.caveat}</p>
         </div>
       )}
     </section>

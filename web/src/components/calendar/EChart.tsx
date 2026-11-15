@@ -83,7 +83,7 @@ export function EChart({ option, className, style, ariaLabel, onClick }: Props) 
   }, []);
 
   useEffect(() => {
-    chartRef.current?.setOption(option, { notMerge: true, lazyUpdate: true });
+    chartRef.current?.setOption(option, { notMerge: true });
   }, [option]);
 
   return <div ref={ref} className={className} style={style} role="img" aria-label={ariaLabel} />;

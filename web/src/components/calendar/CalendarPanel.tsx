@@ -132,11 +132,11 @@ export function CalendarPanel() {
     metric === "anomaly" ? t("unitZ") : metric === "frp" ? t("unitFrp") : state.mode === "raw" ? t("unitRaw") : t("unitHarm");
 
   return (
-    <section aria-label={t("calendarTitle")} className="panel rise flex flex-col">
-      <header className="flex flex-wrap items-center gap-x-4 gap-y-3 border-b border-[var(--line)] px-5 pt-4 pb-3.5">
-        <h2 className="min-w-0 flex-1 basis-full text-[20px] leading-tight font-semibold tracking-[-0.015em] text-[var(--text-1)] sm:basis-auto">
+    <section aria-label={t("calendarTitle")} className="glass-panel rise flex flex-col rounded-2xl">
+      <header className="flex flex-wrap items-center gap-x-4 gap-y-3 border-b border-cyan-500/20 px-5 pt-4 pb-3.5">
+        <h2 className="min-w-0 flex-1 basis-full text-[21px] leading-tight font-bold tracking-tight text-white sm:basis-auto">
           {region?.name ?? state.regionId}
-          <span className="ml-2 text-[15px] font-normal tracking-normal whitespace-nowrap text-[var(--text-3)]">{t("calendarTitle")}</span>
+          <span className="ml-2 text-[15px] font-normal tracking-normal whitespace-nowrap text-cyan-300/80">{t("calendarTitle")}</span>
         </h2>
         <span className="flex items-center gap-1">
           <ModeToggle
@@ -147,7 +147,7 @@ export function CalendarPanel() {
           />
           <InfoTip k={state.mode === "raw" ? "infoRaw" : "infoHarmonized"} label={state.mode === "raw" ? t("raw") : t("harmonized")} />
         </span>
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           <button
             className="btn btn-quiet"
             disabled={!a.rows}
@@ -168,9 +168,9 @@ export function CalendarPanel() {
             />
             <InfoTip k={metric === "anomaly" ? "infoHfai" : metric === "frp" ? "infoFrp" : "infoViirsEq"} />
           </span>
-          <p className="min-w-0 flex-1 basis-60 text-[13px] text-[var(--text-2)]">
-            {explain} <span className="t-caption">· {unit}</span>
-            {isZ && <span className="t-caption block">{t("modeNotApplicable")}</span>}
+          <p className="min-w-0 flex-1 basis-60 text-[13px] text-slate-300">
+            {explain} <span className="t-caption text-slate-400">· {unit}</span>
+            {isZ && <span className="t-caption block text-cyan-300/80">{t("modeNotApplicable")}</span>}
           </p>
         </div>
       </header>
@@ -207,100 +207,100 @@ export function CalendarPanel() {
               <div
                 role="dialog"
                 aria-label={t("detail")}
-                className="panel panel-solid absolute z-20 w-72 p-3.5 text-[13px]"
+                className="glass-panel absolute z-20 w-72 rounded-2xl p-4 text-[13px] text-slate-100 shadow-[0_12px_40px_rgba(0,0,0,0.8),0_0_20px_rgba(6,182,212,0.25)] border border-cyan-400/40"
                 style={{
                   left: popover.left,
                   top: popover.top,
                   transform: popover.flipX ? "translateX(calc(-100% - 24px))" : undefined,
                 }}
               >
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="text-[14px] font-semibold text-[var(--text-1)]">
+                <div className="mb-2 flex items-center justify-between border-b border-cyan-500/20 pb-2">
+                  <p className="text-[14.5px] font-bold text-white">
                     {monthLong(sel.month)} {sel.year}
                   </p>
-                  <button className="btn btn-quiet btn-icon !size-7" aria-label={t("close")} onClick={() => setPopover(null)}>
+                  <button className="btn btn-quiet btn-icon !size-7 text-slate-400 hover:text-white" aria-label={t("close")} onClick={() => setPopover(null)}>
                     <X className="size-3.5" />
                   </button>
                 </div>
                 {row ? (
-                  <dl className="num grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
-                    <dt className="text-[var(--text-3)]">{t("value")}</dt>
-                    <dd className="text-right font-medium text-[var(--text-1)]">
+                  <dl className="num grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-xs">
+                    <dt className="text-slate-400">{t("value")}</dt>
+                    <dd className="text-right font-semibold text-white">
                       {fmt(displayValue(row, state.mode), 1)}{" "}
-                      <span className="text-[var(--text-3)]">({state.mode === "raw" ? t("observed") : t("estimated")})</span>
+                      <span className="text-cyan-300/80">({state.mode === "raw" ? t("observed") : t("estimated")})</span>
                     </dd>
-                    <dt className="text-[var(--text-3)]">{t("median")}</dt>
-                    <dd className="text-right">{fmt(an?.median, 1)}</dd>
-                    <dt className="text-[var(--text-3)]">{t("percentile")}</dt>
-                    <dd className="text-right">
+                    <dt className="text-slate-400">{t("median")}</dt>
+                    <dd className="text-right text-slate-200">{fmt(an?.median, 1)}</dd>
+                    <dt className="text-slate-400">{t("percentile")}</dt>
+                    <dd className="text-right text-slate-200">
                       {an?.percentile != null ? `P${fmt(an.percentile, 0)}` : "—"}{" "}
-                      <span className="text-[var(--text-3)]">({t("basedOnYears", { n: an?.nYears ?? 0 })})</span>
+                      <span className="text-slate-400">({t("basedOnYears", { n: an?.nYears ?? 0 })})</span>
                     </dd>
                     {row.z != null && (
                       <>
-                        <dt className="text-[var(--text-3)]">{t("hfai")}</dt>
-                        <dd className="flex items-center justify-end gap-1.5 text-right">
+                        <dt className="text-slate-400">{t("hfai")}</dt>
+                        <dd className="flex items-center justify-end gap-1.5 text-right font-medium text-white">
                           {row.z_class && <ClassSwatch c={row.z_class} />}
                           {fmtSigned(row.z, 2)}
-                          {row.z_class && <span className="text-[var(--text-3)]">({t(Z_CLASS_LABEL[row.z_class])})</span>}
+                          {row.z_class && <span className="text-cyan-300/80">({t(Z_CLASS_LABEL[row.z_class])})</span>}
                         </dd>
                       </>
                     )}
                     {row.frp_harmonized != null && (
                       <>
-                        <dt className="text-[var(--text-3)]">{t("frpHarm")}</dt>
-                        <dd className="text-right">{fmt(row.frp_harmonized, 0)} MW</dd>
+                        <dt className="text-slate-400">{t("frpHarm")}</dt>
+                        <dd className="text-right text-slate-200">{fmt(row.frp_harmonized, 0)} MW</dd>
                       </>
                     )}
                     {selOni && (
                       <>
-                        <dt className="text-[var(--text-3)]">{t("oni")}</dt>
-                        <dd className="text-right">
-                          {fmtSigned(selOni.oni, 1)} <span className="text-[var(--text-3)]">({t(PHASE_LABEL[selOni.phase])})</span>
+                        <dt className="text-slate-400">{t("oni")}</dt>
+                        <dd className="text-right text-slate-200">
+                          {fmtSigned(selOni.oni, 1)} <span className="text-cyan-300/80">({t(PHASE_LABEL[selOni.phase])})</span>
                         </dd>
                       </>
                     )}
-                    <dt className="text-[var(--text-3)]">{t("sourceSat")}</dt>
-                    <dd className="text-right">{row.source ?? "—"}</dd>
-                    <dt className="text-[var(--text-3)]">{t("factor")}</dt>
-                    <dd className="text-right">{fmt(row.factor, 2)}</dd>
-                    <dt className="text-[var(--text-3)]">{t("regimeLabel")}</dt>
-                    <dd className="text-right">{row.regime ?? "—"}</dd>
-                    <dt className="t-label col-span-2 mt-2 border-t border-[var(--line)] pt-2">{t("rawVsHarm")}</dt>
-                    <dt className="text-[var(--text-3)]">{t("modisRaw")}</dt>
-                    <dd className="text-right">{fmt(row.raw_modis, 0)}</dd>
-                    <dt className="text-[var(--text-3)]">{t("viirsRaw")}</dt>
-                    <dd className="text-right">{fmt(row.raw_viirs, 0)}</dd>
-                    <dt className="text-[var(--text-3)]">{t("harmonized")}</dt>
-                    <dd className="text-right">{fmt(row.harmonized, 1)}</dd>
-                    <dt className="text-[var(--text-3)]">{t("uncertainty")}</dt>
-                    <dd className="text-right">
+                    <dt className="text-slate-400">{t("sourceSat")}</dt>
+                    <dd className="text-right text-slate-200">{row.source ?? "—"}</dd>
+                    <dt className="text-slate-400">{t("factor")}</dt>
+                    <dd className="text-right text-slate-200">{fmt(row.factor, 2)}</dd>
+                    <dt className="text-slate-400">{t("regimeLabel")}</dt>
+                    <dd className="text-right text-slate-200">{row.regime ?? "—"}</dd>
+                    <dt className="t-label col-span-2 mt-2 border-t border-cyan-500/20 pt-2 text-cyan-300 font-semibold">{t("rawVsHarm")}</dt>
+                    <dt className="text-slate-400">{t("modisRaw")}</dt>
+                    <dd className="text-right text-slate-200">{fmt(row.raw_modis, 0)}</dd>
+                    <dt className="text-slate-400">{t("viirsRaw")}</dt>
+                    <dd className="text-right text-slate-200">{fmt(row.raw_viirs, 0)}</dd>
+                    <dt className="text-slate-400">{t("harmonized")}</dt>
+                    <dd className="text-right font-medium text-cyan-300">{fmt(row.harmonized, 1)}</dd>
+                    <dt className="text-slate-400">{t("uncertainty")}</dt>
+                    <dd className="text-right text-slate-400">
                       {fmt(row.harmonized_p5, 1)}–{fmt(row.harmonized_p95, 1)}
                     </dd>
                     {an?.diff != null && (
                       <>
-                        <dt className="text-[var(--text-3)]">Δ</dt>
-                        <dd className="text-right">{fmtSigned(an.diff, 1)}</dd>
+                        <dt className="text-slate-400">Δ</dt>
+                        <dd className="text-right text-white">{fmtSigned(an.diff, 1)}</dd>
                       </>
                     )}
                   </dl>
                 ) : (
-                  <p className="text-[var(--text-2)]">{t("noSensor")}</p>
+                  <p className="text-slate-300">{t("noSensor")}</p>
                 )}
               </div>
             )}
           </div>
           <div className="flex min-w-0 flex-col gap-3">
-            <div role="tablist" className="flex gap-4 border-b border-[var(--line)]">
+            <div role="tablist" className="flex gap-4 border-b border-cyan-500/20">
               {(["series", "event", "ranking"] as const).map((k) => (
                 <button
                   key={k}
                   role="tab"
                   aria-selected={tab === k}
-                  className={`-mb-px h-8 border-b text-[13px] font-medium whitespace-nowrap transition-colors duration-150 ${
+                  className={`-mb-px h-8.5 border-b-2 text-[13.5px] font-medium whitespace-nowrap transition-all duration-150 ${
                     tab === k
-                      ? "border-[var(--text-1)] text-[var(--text-1)]"
-                      : "border-transparent text-[var(--text-3)] hover:text-[var(--text-2)]"
+                      ? "border-[#00d2ff] text-[#00d2ff] font-bold drop-shadow-[0_0_8px_rgba(0,210,255,0.4)]"
+                      : "border-transparent text-slate-400 hover:text-white"
                   }`}
                   onClick={() => setTab(k)}
                 >

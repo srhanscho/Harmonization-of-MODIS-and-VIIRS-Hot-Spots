@@ -21,6 +21,8 @@ const HOME_BOUNDS: [[number, number], [number, number]] = [
   [-52.5, 13],
 ];
 const GLOBE_HOME = { center: [-64, -19] as [number, number], zoom: 2.05 };
+/** Star map height relative to the map (keep in sync with `background-size: auto 140%` in globals.css). */
+const STAR_SCALE = 1.4;
 const isPhone = () => typeof window !== "undefined" && window.innerWidth < 768;
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
 
@@ -506,6 +508,19 @@ export default function GlobeMap() {
     map.on("zoom", () => setZoom(Math.round(map.getZoom() * 4) / 4));
     map.on("movestart", () => setHover(null));
 
+    // Star field parallax: the NASA star map (globals.css, .maplibregl-map::before) is an
+    // equirectangular sky drawn at STAR_SCALE x the map height, so one full turn of the camera
+    // around the Earth scrolls exactly one sky width; latitude tilts it within the spare height.
+    const syncStars = () => {
+      const c = map.getCenter();
+      const skyW = el.clientHeight * STAR_SCALE * 2;
+      el.style.setProperty("--stars-x", `${(-c.lng / 360) * skyW}px`);
+      el.style.setProperty("--stars-y", `${50 - Math.max(-1, Math.min(1, c.lat / 90)) * 50}%`);
+    };
+    syncStars();
+    map.on("move", syncStars);
+    map.on("resize", syncStars);
+
     // Probing: hover (fine pointers) and click/tap (all pointers) on cells and sensor pixels.
     const probeAt = (e: maplibregl.MapMouseEvent): Probe | null => {
       const feats = map.queryRenderedFeatures(e.point, { layers: [...PX_LAYERS.filter((l) => l.endsWith("fill")), ...CELL_LAYERS].filter((l) => map.getLayer(l)) });
@@ -596,6 +611,7 @@ export default function GlobeMap() {
     const map = mapRef.current;
     if (!map || !ready) return;
     const apply = () => {
+      if (!map.isStyleLoaded()) return;
       for (const [k, ids] of Object.entries(LAYER_GROUPS)) {
         const on = state.layers[k as keyof typeof LAYER_GROUPS];
         for (const id of ids) {
@@ -606,12 +622,12 @@ export default function GlobeMap() {
         }
       }
       const heatOn = thermal && state.layers.cells;
-      map.setLayoutProperty("fire-heat", "visibility", heatOn ? "visible" : "none");
+      if (map.getLayer("fire-heat")) map.setLayoutProperty("fire-heat", "visibility", heatOn ? "visible" : "none");
       if (thermal) for (const id of MOSAIC_LAYERS) if (map.getLayer(id)) map.setLayoutProperty(id, "visibility", "none");
       const flat = map.getProjection()?.type === "mercator";
       const relief = !thermal && state.layers.cells && flat && map.getPitch() > 15;
-      map.setLayoutProperty("fire-extrude", "visibility", relief ? "visible" : "none");
-      if (relief) map.setLayoutProperty("fire-fill", "visibility", "none");
+      if (map.getLayer("fire-extrude")) map.setLayoutProperty("fire-extrude", "visibility", relief ? "visible" : "none");
+      if (relief && map.getLayer("fire-fill")) map.setLayoutProperty("fire-fill", "visibility", "none");
     };
     apply();
     map.on("pitchend", apply);

@@ -24,13 +24,15 @@ export function Switch({ on }: { on: boolean }) {
   return (
     <span
       aria-hidden
-      className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full border transition-colors duration-150 ${
-        on ? "border-transparent bg-[var(--sci)]" : "border-[var(--line-strong)] bg-[var(--ink-2)]"
+      className={`relative inline-flex h-4.5 w-8 shrink-0 items-center rounded-full border transition-all duration-200 ${
+        on
+          ? "border-cyan-400/60 bg-gradient-to-r from-blue-600 to-cyan-500 shadow-[0_0_10px_rgba(0,210,255,0.4)]"
+          : "border-slate-700 bg-slate-900/80"
       }`}
     >
       <span
-        className={`absolute size-2.5 rounded-full transition-transform duration-150 ${
-          on ? "translate-x-[14px] bg-white" : "translate-x-[2px] bg-[var(--text-3)]"
+        className={`absolute size-3 rounded-full transition-transform duration-200 ${
+          on ? "translate-x-[16px] bg-white shadow-sm" : "translate-x-[2px] bg-slate-400"
         }`}
       />
     </span>
@@ -54,15 +56,15 @@ export function Counters() {
   const sats = sel ? activeSatellites(sel.year, sel.month) : [];
 
   return (
-    <aside aria-label={t("indicators")} className="panel flex flex-col">
-      <div className="px-4 pt-3.5 pb-3">
-        <h2 className="t-label mb-3 !text-[var(--text-2)]">{t("indicators")}</h2>
+    <aside aria-label={t("indicators")} className="glass-panel flex flex-col rounded-2xl">
+      <div className="px-5 pt-4 pb-3">
+        <h2 className="mb-3 text-[11px] font-semibold tracking-wider text-cyan-300 uppercase">{t("indicators")}</h2>
         {!state.regionId ? (
-          <p className="text-[13px] text-[var(--text-2)]">{t("selectRegionPrompt")}</p>
+          <p className="text-[13.5px] text-slate-300">{t("selectRegionPrompt")}</p>
         ) : !a.rows ? (
-          <p className="text-[13px] text-[var(--text-3)]">{a.monthly == null ? t("loading") : t("notGenerated")}</p>
+          <p className="text-[13px] text-slate-400">{a.monthly == null ? t("loading") : t("notGenerated")}</p>
         ) : (
-          <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2 [&>*]:border-t [&>*]:border-[var(--line)] [&>*]:py-3">
+          <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2 [&>*]:border-t [&>*]:border-cyan-500/20 [&>*]:py-3.5">
             <Stat
               label={`${t("selectedMonth")}${sel ? ` · ${monthShort(sel.month)} ${sel.year}` : ""}`}
               value={an?.diff != null ? fmtSigned(an.diff, 0) : "—"}
@@ -140,9 +142,9 @@ export function Counters() {
         )}
       </div>
       {state.regionId && <ClimateCard regionId={state.regionId} />}
-      <div className="border-t border-[var(--line)] px-4 pt-3 pb-3.5">
-        <h2 className="t-label mb-1.5">{t("layers")}</h2>
-        <ul className="-mx-2 flex flex-col">
+      <div className="border-t border-cyan-500/20 px-5 pt-3.5 pb-4">
+        <h2 className="mb-2 text-[11px] font-semibold tracking-wider text-cyan-300 uppercase">{t("layers")}</h2>
+        <ul className="-mx-2 flex flex-col gap-0.5">
           {LAYERS.map((l) => {
             const on = state.layers[l.key];
             return (
@@ -150,9 +152,9 @@ export function Counters() {
                 <button
                   aria-pressed={on}
                   onClick={() => dispatch({ type: "toggleLayer", layer: l.key })}
-                  className="flex h-7 w-full items-center justify-between gap-2 rounded-md px-2 text-left text-xs text-[var(--text-2)] transition-colors duration-150 hover:bg-[var(--ink-2)] hover:text-[var(--text-1)]"
+                  className="flex h-8 w-full items-center justify-between gap-2 rounded-xl px-2.5 text-left text-xs text-slate-300 transition-all duration-150 hover:bg-cyan-500/10 hover:text-white"
                 >
-                  <span className={on ? "text-[var(--text-1)]" : ""}>{t(l.label)}</span>
+                  <span className={on ? "font-medium text-white" : ""}>{t(l.label)}</span>
                   <Switch on={on} />
                 </button>
               </li>

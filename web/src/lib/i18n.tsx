@@ -5,7 +5,7 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from "re
 export type Lang = "en" | "es";
 
 const en = {
-  projectName: "[PROJECT_NAME]",
+  projectName: "K-Fire",
   tagline: "Did the fire change, or the satellite?",
   explore: "Explore",
   method: "Method",
@@ -256,7 +256,7 @@ export type DictKey = keyof typeof en;
 type Dict = Record<DictKey, string>;
 
 const es: Dict = {
-  projectName: "[PROJECT_NAME]",
+  projectName: "K-Fire",
   tagline: "¿Cambió el fuego, o cambió el satélite?",
   explore: "Explorar",
   method: "Método",

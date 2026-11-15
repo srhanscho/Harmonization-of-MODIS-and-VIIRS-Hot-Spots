@@ -30,23 +30,23 @@ export const SERIES = {
 };
 
 /** Science blue: the single UI accent (selection, peak/record marks, focus). */
-export const ACCENT = "#0b5cad";
+export const ACCENT = "#00d2ff";
 
 /** Cool neutral ramp mirrored from globals.css for canvas renderers (ECharts, MapLibre). */
 export const UI = {
-  ground: "#eef2f6",
-  surface: "#ffffff",
-  text1: "#0b1f3a",
-  text2: "#3b4a60",
-  text3: "#5b6a7e",
-  line: "#c9d3de",
-  grid: "rgba(11,31,58,0.08)",
-  cellGap: "#ffffff",
-  tooltip: "rgba(255,255,255,0.98)",
+  ground: "#030816",
+  surface: "rgba(8, 20, 42, 0.88)",
+  text1: "#f1f5f9",
+  text2: "#cbd5e1",
+  text3: "#94a3b8",
+  line: "rgba(56, 189, 248, 0.25)",
+  grid: "rgba(56, 189, 248, 0.12)",
+  cellGap: "#061228",
+  tooltip: "rgba(8, 20, 42, 0.95)",
 };
 
-export const NO_DATA = "#f1f4f7";
-export const HATCH = "rgba(11,31,58,0.3)";
+export const NO_DATA = "rgba(15, 29, 58, 0.5)";
+export const HATCH = "rgba(56, 189, 248, 0.25)";
 
 /**
  * HFAI anomaly classes (report Eq. 4): a diverging blue / neutral / amber / vermilion scale.
@@ -64,14 +64,14 @@ export const ANOMALY: Record<"below" | "normal" | "moderate" | "critical", strin
 export const ENSO: Record<"el_nino" | "la_nina" | "neutral", string> = {
   el_nino: "#e0763a",
   la_nina: "#3d80c4",
-  neutral: "rgba(11,31,58,0.12)",
+  neutral: "rgba(56, 189, 248, 0.18)",
 };
 
 /** Experimental outlook badges: the warm alert hues. */
-export const ALERT = { yellow: "#d99a00", red: "#b93a0e" };
+export const ALERT = { yellow: "#fbbf24", red: "#ff4b4b" };
 
-/** Forecast chart: the model is drawn in navy ink so the observed series leads. */
-export const MODEL = { line: "#3b4a60", band: "rgba(11,31,58,0.10)", train: "rgba(11,31,58,0.035)" };
+/** Forecast chart: the model is drawn in science blue so the observed series leads. */
+export const MODEL = { line: "#00d2ff", band: "rgba(0, 210, 255, 0.18)", train: "rgba(0, 210, 255, 0.06)" };
 
 /** Wind arrows: white hairlines over the imagery. */
 export const WIND = "rgba(255,255,255,0.85)";

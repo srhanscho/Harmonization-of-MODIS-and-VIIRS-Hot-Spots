@@ -1,13 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowRight, ChevronDown, Search, X } from "lucide-react";
+import { ArrowRight, ChevronDown, Crosshair, MapPin, Search, X } from "lucide-react";
 import { DataState } from "./DataState";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
 import type { Region } from "@/lib/types";
 
 const COUNTRY_NAMES: Record<string, string> = { CO: "Colombia", AR: "Argentina" };
+const COUNTRY_FLAGS: Record<string, string> = { CO: "🇨🇴", AR: "🇦🇷" };
 
 interface Demo {
   label: string;
@@ -21,7 +22,7 @@ const byIdOrName = (id: RegExp, name: RegExp) => (rs: Region[]) =>
 
 export const DEMOS: Demo[] = [
   {
-    label: "Chilecito · Jul 2026",
+    label: "Chilecito - Jul 2026",
     find: (rs) => byIdOrName(/CHILECITO/i, /chilecito/i)(rs) ?? rs.find((r) => /la rioja/i.test(r.name)),
     year: 2026,
     month: 7,
@@ -33,22 +34,13 @@ export const DEMOS: Demo[] = [
 const isNational = (r: Region) => r.id === r.country;
 
 /** Case- and accent-insensitive key for the place search. */
-const fold = (s: string) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const fold = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
 /** Most specific (smallest bbox) region containing the point. */
 export function regionAt(regions: Region[], lat: number, lon: number): Region | undefined {
   return regions
     .filter((r) => lon >= r.bbox[0] && lon <= r.bbox[2] && lat >= r.bbox[1] && lat <= r.bbox[3])
     .sort((a, b) => (a.bbox[2] - a.bbox[0]) * (a.bbox[3] - a.bbox[1]) - (b.bbox[2] - b.bbox[0]) * (b.bbox[3] - b.bbox[1]))[0];
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="flex flex-col gap-2 border-t border-[var(--line)] px-4 py-3.5 first:border-t-0">
-      <h2 className="t-label">{title}</h2>
-      {children}
-    </section>
-  );
 }
 
 export function RegionPicker({ collapsible = false }: { collapsible?: boolean }) {
@@ -95,162 +87,211 @@ export function RegionPicker({ collapsible = false }: { collapsible?: boolean })
   };
 
   return (
-    <nav aria-label={t("region")} className="panel pointer-events-auto flex flex-col">
-      <div className="relative flex items-center gap-1.5 px-3 pt-3 pb-2.5">
-        <Search className="pointer-events-none absolute top-1/2 left-5.5 size-4 -translate-y-[calc(50%-1px)] text-[var(--text-3)]" aria-hidden />
+    <nav
+      aria-label={t("region")}
+      className="glass-panel pointer-events-auto flex flex-col space-y-3.5 rounded-2xl p-3.5 text-xs text-white"
+    >
+      {/* Search Bar with Collapse Icon */}
+      <div className="relative flex items-center rounded-xl border border-cyan-500/40 bg-[#071329]/80 px-3 py-2 text-slate-300 shadow-inner focus-within:border-cyan-400 focus-within:shadow-[0_0_12px_rgba(6,182,212,0.3)] transition">
+        <Search className="mr-2 size-3.5 shrink-0 text-slate-400" aria-hidden />
         <input
           type="search"
-          className="field !h-9 min-w-0 flex-1 !pl-8 [&::-webkit-search-cancel-button]:hidden"
+          className="w-full border-none bg-transparent p-0 text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-0 [&::-webkit-search-cancel-button]:hidden"
           placeholder={t("searchPlace")}
           aria-label={t("searchPlace")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && matches[0]) {
+              e.preventDefault();
               select(matches[0].id);
               setQuery("");
             }
-            if (e.key === "Escape") setQuery("");
           }}
         />
         {query && (
           <button
-            className={`btn btn-quiet btn-icon absolute top-1/2 !size-7 -translate-y-[calc(50%-1px)] ${collapsible ? "right-[3.25rem]" : "right-4"}`}
+            className="mr-1 shrink-0 text-slate-400 transition hover:text-white"
             aria-label={t("clear")}
             onClick={() => setQuery("")}
           >
-            <X className="size-3.5" aria-hidden />
+            <X className="size-3.5" />
           </button>
         )}
         {collapsible && (
           <button
-            className="btn btn-quiet btn-icon !size-9 shrink-0"
+            className="ml-1 shrink-0 text-slate-400 transition hover:text-white"
             aria-expanded={expanded}
             aria-label={t("region")}
             onClick={() => setManual({ view: state.view, open: !expanded })}
           >
-            <ChevronDown className={`size-4 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} aria-hidden />
+            <ChevronDown className={`size-4 transition-transform duration-200 ${expanded ? "rotate-180 text-cyan-400" : ""}`} aria-hidden />
           </button>
         )}
       </div>
+
       {q && (
-        <ul className="-mt-1 flex flex-col border-b border-[var(--line)] px-2 pb-2" aria-label={t("searchResults")}>
+        <ul className="-mt-1.5 flex flex-col gap-1 rounded-xl border border-cyan-500/30 bg-[#071329]/95 p-1.5 shadow-xl backdrop-blur-xl" aria-label={t("searchResults")}>
           {matches.length === 0 ? (
-            <li className="px-2 py-1.5 text-[13px] text-[var(--text-3)]">{t("noMatches")}</li>
+            <li className="px-2 py-1.5 text-center text-xs text-slate-400 italic">{t("noMatches")}</li>
           ) : (
             matches.map((r) => (
               <li key={r.id}>
                 <button
-                  className="flex h-8 w-full items-center justify-between gap-2 rounded-md px-2 text-left text-[13px] text-[var(--text-1)] hover:bg-[var(--sci-soft)]"
+                  className="flex h-8 w-full items-center justify-between gap-2 rounded-lg px-2 text-left text-xs text-slate-200 transition hover:bg-blue-900/40 hover:text-white"
                   onClick={() => {
                     select(r.id);
                     setQuery("");
                   }}
                 >
                   <span className="truncate">{r.name}</span>
-                  <span className="t-caption shrink-0">{isNational(r) ? t("country") : COUNTRY_NAMES[r.country] ?? r.country}</span>
+                  <span className="shrink-0 text-[11px] text-slate-400">
+                    {COUNTRY_FLAGS[r.country] ? `${COUNTRY_FLAGS[r.country]} ` : ""}{isNational(r) ? t("country") : COUNTRY_NAMES[r.country] ?? r.country}
+                  </span>
                 </button>
               </li>
             ))
           )}
         </ul>
       )}
+
       {expanded && (
-      <>
-      <Section title={t("demoCases")}>
-        <ul className="-mx-2 flex flex-col">
-          {DEMOS.map((d) => {
-            const r = d.find(list);
-            const active = !!r && state.regionId === r.id;
-            return (
-              <li key={d.label}>
-                <button
-                  className={`group flex h-8 w-full items-center gap-2.5 rounded-md px-2 text-left text-[13px] transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40 ${
-                    active ? "bg-[var(--ink-3)] text-[var(--text-1)]" : "text-[var(--text-2)] hover:bg-[var(--ink-2)] hover:text-[var(--text-1)]"
-                  }`}
-                  disabled={!r}
-                  title={r ? r.id : t("notGenerated")}
-                  aria-pressed={active}
-                  onClick={() => r && select(r.id, d.year, d.month)}
-                >
-                  <span
-                    className={`size-1.5 shrink-0 rounded-full transition-colors ${active ? "bg-[var(--sci)]" : "bg-[var(--line-strong)] group-hover:bg-[var(--text-3)]"}`}
-                    aria-hidden
+        <>
+          {/* Casos Demo Section */}
+          <div className="space-y-2">
+            <h3 className="px-1 text-[11px] font-medium text-slate-400">{t("demoCases")}</h3>
+            <div className="space-y-1">
+              {DEMOS.map((d) => {
+                const r = d.find(list);
+                const active = !!r && state.regionId === r.id;
+                return (
+                  <button
+                    key={d.label}
+                    className={`group flex w-full items-center space-x-2.5 rounded-lg px-2.5 py-1.5 text-left text-xs transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                      active
+                        ? "border border-blue-500/40 bg-blue-900/40 font-medium text-white shadow-[0_0_10px_rgba(59,130,246,0.25)]"
+                        : "text-slate-400 hover:bg-white/5 hover:text-slate-200"
+                    }`}
+                    disabled={!r}
+                    title={r ? r.id : t("notGenerated")}
+                    aria-pressed={active}
+                    onClick={() => r && select(r.id, d.year, d.month)}
+                  >
+                    <span className={`h-3.5 w-1 shrink-0 rounded-full ${active ? "bg-blue-500" : "bg-transparent"}`} />
+                    <span
+                      className={`size-2 shrink-0 rounded-full ${
+                        active ? "bg-blue-400 shadow-[0_0_6px_#60a5fa]" : "border border-slate-500"
+                      }`}
+                      aria-hidden
+                    />
+                    <span className="truncate">{d.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Region Filters Section */}
+          <div className="space-y-3 border-t border-slate-700/60 pt-2.5">
+            <div className="flex items-center space-x-1.5 font-medium text-cyan-400">
+              <MapPin className="size-3.5" aria-hidden />
+              <span className="font-semibold text-white">{t("region")}</span>
+            </div>
+
+            {regions?.status !== "ok" ? (
+              <DataState result={regions} file="/data/regions.json" />
+            ) : (
+              <>
+                <div className="space-y-1">
+                  <label className="block px-0.5 text-[11px] text-slate-400">{t("country")}</label>
+                  <div className="relative flex items-center rounded-xl border border-slate-600/70 bg-[#081730]/90 px-3 py-1.5 text-white shadow-inner transition focus-within:border-cyan-400/70">
+                    <select
+                      className="w-full cursor-pointer appearance-none bg-transparent pr-6 text-xs font-medium text-white outline-none"
+                      value={activeCountry}
+                      onChange={(e) => setCountry(e.target.value)}
+                    >
+                      {countries.map((c) => (
+                        <option key={c} value={c} className="bg-slate-900 text-white">
+                          {COUNTRY_FLAGS[c] ? `${COUNTRY_FLAGS[c]} ` : ""}{COUNTRY_NAMES[c] ?? c}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 size-3.5 text-slate-400" aria-hidden />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="block px-0.5 text-[11px] text-slate-400">{t("adminRegion")}</label>
+                  <div className="relative flex items-center rounded-xl border border-slate-600/70 bg-[#081730]/90 px-3 py-1.5 text-slate-300 shadow-inner transition focus-within:border-cyan-400/70">
+                    <select
+                      className="w-full cursor-pointer appearance-none bg-transparent pr-6 text-xs text-white outline-none"
+                      value={current && current.country === activeCountry ? current.id : ""}
+                      onChange={(e) => e.target.value && select(e.target.value)}
+                    >
+                      <option value="" className="bg-slate-900 text-slate-400">—</option>
+                      {national && (
+                        <option value={national.id} className="bg-slate-900 text-white">
+                          {t("wholeCountry")} ({national.name})
+                        </option>
+                      )}
+                      {admins.map((r) => (
+                        <option key={r.id} value={r.id} className="bg-slate-900 text-white">
+                          {r.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 size-3.5 text-slate-400" aria-hidden />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Coordinates Search Section */}
+          <div className="space-y-2 border-t border-slate-700/60 pt-2.5">
+            <div className="flex items-center space-x-1.5 text-slate-300">
+              <Crosshair className="size-3.5 text-cyan-400" aria-hidden />
+              <span className="text-[11px] font-medium text-slate-200">{t("latLon")}</span>
+            </div>
+            <form onSubmit={findByCoords} className="flex flex-col gap-1.5">
+              <div className="flex items-center space-x-2">
+                <div className="flex-1 rounded-xl border border-slate-600/70 bg-[#081730]/90 px-3 py-1.5 shadow-inner transition focus-within:border-cyan-400/70">
+                  <input
+                    className="w-full border-none bg-transparent p-0 font-mono text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-0"
+                    inputMode="decimal"
+                    placeholder={t("lat")}
+                    aria-label={t("lat")}
+                    value={lat}
+                    onChange={(e) => setLat(e.target.value)}
                   />
-                  <span className="truncate">{d.label}</span>
+                </div>
+                <div className="flex-1 rounded-xl border border-slate-600/70 bg-[#081730]/90 px-3 py-1.5 shadow-inner transition focus-within:border-cyan-400/70">
+                  <input
+                    className="w-full border-none bg-transparent p-0 font-mono text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-0"
+                    inputMode="decimal"
+                    placeholder={t("lon")}
+                    aria-label={t("lon")}
+                    value={lon}
+                    onChange={(e) => setLon(e.target.value)}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white shadow-[0_0_10px_rgba(37,99,235,0.6)] transition hover:bg-blue-500 hover:shadow-[0_0_14px_rgba(56,189,248,0.8)] active:scale-95"
+                  title={t("go")}
+                  aria-label={t("go")}
+                >
+                  <ArrowRight className="size-4" aria-hidden />
                 </button>
-              </li>
-            );
-          })}
-        </ul>
-      </Section>
-
-      <Section title={t("region")}>
-        {regions?.status !== "ok" ? (
-          <DataState result={regions} file="/data/regions.json" />
-        ) : (
-          <div className="flex flex-col gap-2">
-            <label className="flex flex-col gap-1">
-              <span className="t-caption">{t("country")}</span>
-              <select className="field" value={activeCountry} onChange={(e) => setCountry(e.target.value)}>
-                {countries.map((c) => (
-                  <option key={c} value={c}>
-                    {COUNTRY_NAMES[c] ?? c}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="t-caption">{t("adminRegion")}</span>
-              <select
-                className="field"
-                value={current && current.country === activeCountry ? current.id : ""}
-                onChange={(e) => e.target.value && select(e.target.value)}
-              >
-                <option value="">—</option>
-                {national && <option value={national.id}>{t("wholeCountry")} ({national.name})</option>}
-                {admins.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+              </div>
+              {msg && (
+                <p className="rounded-lg border border-red-500/30 bg-red-950/60 px-2.5 py-1 text-xs text-red-300" role="status">
+                  {msg}
+                </p>
+              )}
+            </form>
           </div>
-        )}
-      </Section>
-
-      <Section title={t("latLon")}>
-        <form onSubmit={findByCoords} className="flex flex-col gap-1.5">
-          <div className="flex gap-1.5">
-            <input
-              className="field num min-w-0"
-              inputMode="decimal"
-              placeholder={t("lat")}
-              aria-label={t("lat")}
-              value={lat}
-              onChange={(e) => setLat(e.target.value)}
-            />
-            <input
-              className="field num min-w-0"
-              inputMode="decimal"
-              placeholder={t("lon")}
-              aria-label={t("lon")}
-              value={lon}
-              onChange={(e) => setLon(e.target.value)}
-            />
-            <button type="submit" className="btn btn-icon shrink-0" aria-label={t("go")}>
-              <ArrowRight className="size-4" aria-hidden />
-            </button>
-          </div>
-          {msg && (
-            <p className="text-xs text-[var(--alert)]" role="status">
-              {msg}
-            </p>
-          )}
-        </form>
-      </Section>
-      </>
+        </>
       )}
     </nav>
   );

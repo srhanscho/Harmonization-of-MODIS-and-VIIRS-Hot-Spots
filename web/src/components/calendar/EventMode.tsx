@@ -33,7 +33,7 @@ export function EventMode({ rows, years, year, month, onChange }: Props) {
         borderColor: UI.line,
         extraCssText: "border-radius:6px;font-variant-numeric:tabular-nums;",
         textStyle: { color: UI.text1, fontSize: 12 },
-        axisPointer: { type: "shadow", shadowStyle: { color: "rgba(11,31,58,0.04)" } },
+        axisPointer: { type: "shadow", shadowStyle: { color: "rgba(56,189,248,0.08)" } },
         valueFormatter: (v: number) => fmt(v, 1),
       },
       xAxis: {
@@ -54,7 +54,7 @@ export function EventMode({ rows, years, year, month, onChange }: Props) {
           name: t("harmonized"),
           data: byYear.map((e) => ({
             value: e.value,
-            itemStyle: { color: e.year === year ? ACCENT : "#c4ceda", borderRadius: [1, 1, 0, 0] },
+            itemStyle: { color: e.year === year ? ACCENT : "rgba(56, 189, 248, 0.25)", borderRadius: [2, 2, 0, 0] },
           })),
         },
       ],

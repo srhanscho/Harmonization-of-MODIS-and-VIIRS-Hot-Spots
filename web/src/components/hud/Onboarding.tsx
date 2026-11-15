@@ -81,43 +81,43 @@ export function Onboarding() {
   };
 
   return (
-    <section aria-labelledby="guide-title" className="panel rise pointer-events-auto w-full max-w-[34rem] overflow-hidden">
+    <section aria-labelledby="guide-title" className="glass-panel rise pointer-events-auto w-full max-w-[34rem] overflow-hidden rounded-2xl">
       <div className="flex items-start justify-between gap-4 px-5 pt-4">
-        <h2 id="guide-title" className="text-[18px] leading-snug font-semibold tracking-[-0.015em] text-balance text-[var(--text-1)]">
+        <h2 id="guide-title" className="text-[19px] leading-snug font-bold tracking-tight text-balance text-white">
           {t("obTitle")}
         </h2>
-        <button className="btn btn-quiet btn-icon -mt-1 -mr-2 shrink-0" aria-label={t("obDismiss")} onClick={dismiss}>
+        <button className="btn btn-quiet btn-icon -mt-1 -mr-2 shrink-0 text-slate-400 hover:text-white" aria-label={t("obDismiss")} onClick={dismiss}>
           <X className="size-4" aria-hidden />
         </button>
       </div>
-      <ol className="mt-3 flex flex-col gap-2 px-5 text-[13px] text-[var(--text-2)]">
+      <ol className="mt-3 flex flex-col gap-2.5 px-5 text-[13.5px] text-slate-200">
         {(["obStep1", "obStep2", "obStep3"] as const).map((k, i) => (
           <li key={k} className="grid grid-cols-[1.375rem_1fr] items-baseline gap-2">
-            <span className="num flex size-5 items-center justify-center rounded-full bg-[var(--sci-soft)] text-[11px] font-semibold text-[var(--sci)]">
+            <span className="num flex size-5 items-center justify-center rounded-full border border-cyan-400/35 bg-cyan-950/70 text-[11px] font-bold text-cyan-300 shadow-[0_0_8px_rgba(6,182,212,0.3)]">
               {i + 1}
             </span>
             <span>{t(k)}</span>
           </li>
         ))}
       </ol>
-      <div className="mt-4 border-t border-[var(--line)] bg-[var(--ink-2)] px-3 py-3">
-        <h3 className="t-label mb-1.5 px-2">{t("obStart")}</h3>
-        <ul className="flex flex-col">
+      <div className="mt-4 border-t border-cyan-500/20 bg-slate-950/45 px-3 py-3">
+        <h3 className="mb-1.5 px-2 text-[11px] font-semibold tracking-wider text-cyan-300 uppercase">{t("obStart")}</h3>
+        <ul className="flex flex-col gap-0.5">
           {STORIES.map((s, i) => {
             const available = !!DEMOS[s.demo]?.find(list);
             return (
               <li key={s.title}>
                 <button
-                  className="group flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors duration-150 hover:bg-white disabled:cursor-not-allowed disabled:opacity-45"
+                  className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-2.5 py-2 text-left transition-all duration-150 hover:border-cyan-400/25 hover:bg-cyan-500/10 disabled:cursor-not-allowed disabled:opacity-45"
                   disabled={!available}
                   onClick={() => open(s)}
                 >
                   <Glyph i={i} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px] font-medium text-[var(--text-1)]">{t(s.title)}</span>
-                    <span className="block text-[11.5px] text-[var(--text-3)]">{t(s.sub)}</span>
+                    <span className="block truncate text-[13.5px] font-semibold text-white">{t(s.title)}</span>
+                    <span className="block text-[12px] text-slate-400">{t(s.sub)}</span>
                   </span>
-                  <ArrowRight className="size-4 shrink-0 text-[var(--text-3)] transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-[var(--sci)]" aria-hidden />
+                  <ArrowRight className="size-4 shrink-0 text-cyan-400/60 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-cyan-300" aria-hidden />
                 </button>
               </li>
             );
