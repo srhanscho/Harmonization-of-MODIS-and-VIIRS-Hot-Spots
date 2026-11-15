@@ -123,13 +123,39 @@ export function loadMeta(): Promise<LoadResult<Meta>> {
   );
 }
 
+/**
+ * Compact cells format written by the pipeline:
+ * { year, cell_size, cells: [[lon_center, lat_center, region_index, month, value, month, value, ...], ...] }
+ */
+interface CompactCells {
+  year?: number;
+  cell_size?: number;
+  cells: number[][];
+}
+
+function expandCompactCells(c: CompactCells, year: number): CellRow[] {
+  const y = c.year ?? year;
+  const out: CellRow[] = [];
+  for (const row of c.cells) {
+    const [lon, lat] = row;
+    const cell = `0.1_${lon.toFixed(2)}_${lat.toFixed(2)}`;
+    for (let i = 3; i + 1 < row.length; i += 2) {
+      out.push({ cell, lat, lon, year: y, month: row[i], harmonized: row[i + 1] });
+    }
+  }
+  return out;
+}
+
 export function loadCells(regionId: string, year: number): Promise<LoadResult<CellRow[]>> {
   return cached(`cells:${regionId}:${year}`, () =>
     USE_FIXTURE
       ? fromFixture((f) => f.fixtureCells(regionId, year))
-      : fetchJson<CellRow[]>(`/data/cells/${safeId(regionId)}/${year}.json`).then((r) =>
-          r.status === "ok" && Array.isArray(r.data) ? { status: "ok" as const, data: r.data.map(normCellRow) } : r,
-        ),
+      : fetchJson<CellRow[] | CompactCells>(`/data/cells/${safeId(regionId)}/${year}.json`).then((r) => {
+          if (r.status !== "ok") return r;
+          if (Array.isArray(r.data)) return { status: "ok" as const, data: r.data.map(normCellRow) };
+          if (r.data && Array.isArray(r.data.cells)) return { status: "ok" as const, data: expandCompactCells(r.data, year) };
+          return { status: "ok" as const, data: [] };
+        }),
   );
 }
 
