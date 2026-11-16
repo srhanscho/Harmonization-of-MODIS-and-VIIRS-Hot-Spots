@@ -1,17 +1,17 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState, type CSSProperties } from "react";
+import { useState } from "react";
 import { ChevronDown, ChevronRight, MessageSquareText, Search, X } from "lucide-react";
 import { AssistantBar, AstroBotIcon } from "./assistant/AssistantBar";
 import { CalendarPanel } from "./calendar/CalendarPanel";
 import { Counters } from "./hud/Counters";
 import { Credits, FixtureBanner, Header } from "./hud/Chrome";
+import { DatePicker } from "./hud/DatePicker";
 import { LabView } from "./hud/LabView";
 import { MethodView } from "./hud/MethodView";
 import { Onboarding } from "./hud/Onboarding";
 import { RegionPicker } from "./hud/RegionPicker";
-import { Timeline } from "./hud/Timeline";
 import { USE_FIXTURE } from "@/lib/data";
 import { I18nProvider, useI18n } from "@/lib/i18n";
 import { StoreProvider, useStore } from "@/lib/store";
@@ -69,10 +69,8 @@ function Shell() {
   const { state } = useStore();
   const { lang, t } = useI18n();
   const [placesOpen, setPlacesOpen] = useState(false);
-  const region = state.view === "region" && state.tab === "explore";
+  const explore = state.tab === "explore";
   const analysis = state.tab !== "explore" || state.view === "region";
-  // Space reserved at the bottom of the map for the timeline strip (md and up, region view).
-  const vars = { "--map-bottom": region ? "var(--tl-h)" : "0px" } as CSSProperties;
 
   return (
     <div lang={lang} className="flex min-h-dvh w-full flex-col bg-[var(--ink-0)] text-[var(--text-1)] xl:h-dvh xl:overflow-hidden">
@@ -84,26 +82,29 @@ function Shell() {
       <div className="flex flex-1 flex-col xl:min-h-0 xl:flex-row">
         {/* ---------- Map column: always visible ---------- */}
         <section
-          style={vars}
-          className="relative h-[80vh] min-h-[32rem] shrink-0 overflow-hidden [--tl-h:0px] md:h-[85vh] md:[--tl-h:72px] lg:h-[90vh] xl:h-auto xl:min-h-0 xl:flex-1"
+          className="relative h-[80vh] min-h-[32rem] shrink-0 overflow-hidden md:h-[85vh] lg:h-[90vh] xl:h-auto xl:min-h-0 xl:flex-1"
         >
           <GlobeMap />
 
-          {/* Desktop: compact place card over the map. */}
-          <div className="absolute top-16 left-6 z-10 hidden max-h-[calc(100%-4.5rem-var(--map-bottom))] w-72 overflow-y-auto rounded-2xl xl:block">
-            <RegionPicker collapsible />
+          {/* Left stack over the map: place search, date picker right under it, then the place
+              options. Below xl the place search lives under the map, so only the date picker
+              floats here (md+); on phones it sits under "Find place". The bottom reserve keeps the
+              stack clear of the Pixels/Thermal toggle and legend. */}
+          <div className="absolute top-16 left-6 z-10 hidden max-h-[calc(100%-15.5rem)] w-72 flex-col gap-3 overflow-y-auto rounded-2xl md:flex">
+            <div className="hidden xl:block">
+              <RegionPicker collapsible between={explore ? <DatePicker /> : null} />
+            </div>
+            {explore && (
+              <div className="shrink-0 xl:hidden">
+                <DatePicker />
+              </div>
+            )}
           </div>
 
           {/* Home: the welcome card sits on the map (desktop). */}
           {state.view === "globe" && state.tab === "explore" && (
             <div className="pointer-events-none absolute inset-x-0 bottom-14 z-10 hidden justify-center px-4 xl:flex">
               <Onboarding />
-            </div>
-          )}
-
-          {region && (
-            <div className="absolute inset-x-2 bottom-2 z-10 hidden md:block">
-              <Timeline />
             </div>
           )}
 
@@ -128,9 +129,10 @@ function Shell() {
             <ChevronDown className={`size-4 text-slate-400 transition-transform duration-200 ${placesOpen ? "rotate-180 text-cyan-400" : ""}`} aria-hidden />
           </button>
           {placesOpen && <RegionPicker />}
-          {region && (
+          {/* Phones: date picker right under "Find place" (md+ gets it over the map). */}
+          {explore && (
             <div className="md:hidden">
-              <Timeline />
+              <DatePicker />
             </div>
           )}
           {state.view === "globe" && state.tab === "explore" && (

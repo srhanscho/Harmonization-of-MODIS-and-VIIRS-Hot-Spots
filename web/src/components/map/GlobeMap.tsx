@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as maplibregl from "maplibre-gl";
-import type { ExpressionSpecification, GeoJSONSource, StyleSpecification } from "maplibre-gl";
+import type { ExpressionSpecification, GeoJSONSource, Map as MaplibreMap, StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Crosshair, Info, X } from "lucide-react";
 import { TwoSensors } from "../explainer/TwoSensors";
@@ -26,11 +26,43 @@ const STAR_SCALE = 1.4;
 const isPhone = () => typeof window !== "undefined" && window.innerWidth < 768;
 const EMPTY_FC: GeoJSON.FeatureCollection = { type: "FeatureCollection", features: [] };
 
-/** Below this zoom the mosaic is drawn from 0.5° aggregate squares (a 0.1° cell would be < 4 px). */
+/** Mosaic hand-off to the native 0.1° cells (a cell that fine would be < 4 px below this zoom). */
 const FINE_ZOOM = 5;
+/** Below this zoom the aggregate square stays at its widest (0.5°); it shrinks continuously
+ *  with zoom from here up to FINE_ZOOM, where it reaches 0.1° and hands off to the native
+ *  cell layer — so the square's on-screen size changes smoothly instead of jumping between
+ *  two fixed sizes. */
+const COARSE_MIN_ZOOM = 2;
 const COARSE_STEP = 0.5;
+const NATIVE_STEP = 0.1;
 /** From this zoom on, true sensor footprints become the primary layer where available. */
 export const PIXEL_ZOOM = 7.5;
+
+/** setProjection throws "Style is not done loading" if called before the style is parsed (e.g. a
+ *  region opened right at startup). Try now; if the style isn't ready, retry once it is. */
+function setProjectionSafe(map: MaplibreMap, type: "globe" | "mercator") {
+  const apply = () => {
+    if (map.getProjection()?.type !== type) map.setProjection({ type });
+  };
+  try {
+    apply();
+  } catch {
+    map.once("style.load", () => {
+      try {
+        apply();
+      } catch {
+        /* style still unavailable (map removed); nothing to do */
+      }
+    });
+  }
+}
+
+/** The aggregate square's side (in degrees) for a given zoom: COARSE_STEP at/below
+ *  COARSE_MIN_ZOOM, shrinking linearly to NATIVE_STEP by FINE_ZOOM. */
+function coarseStepForZoom(zoom: number): number {
+  const t = Math.max(0, Math.min(1, (zoom - COARSE_MIN_ZOOM) / (FINE_ZOOM - COARSE_MIN_ZOOM)));
+  return COARSE_STEP - (COARSE_STEP - NATIVE_STEP) * t;
+}
 
 type Expr = ExpressionSpecification;
 const FIRE_COLOR = fireExpr("w") as Expr;
@@ -118,6 +150,8 @@ const STYLE: StyleSpecification = {
     },
     // ---- Pixel mosaic: every active harmonized cell as a tightly packed square. ----
     {
+      // Side shrinks continuously with zoom (coarseStepForZoom); square polygons only, so this
+      // just means the data pushed into the "fireCoarse" source gets finer-grained as you zoom.
       id: "fire-coarse-fill",
       type: "fill",
       source: "fireCoarse",
@@ -132,6 +166,7 @@ const STYLE: StyleSpecification = {
       paint: { "line-color": GAP, "line-width": ["interpolate", ["linear"], ["zoom"], 2.5, 0, 3.5, 0.4, 5, 0.6] },
     },
     {
+      // Native 0.1° cells: takes over exactly where the shrinking square above left off.
       id: "fire-fill",
       type: "fill",
       source: "fire",
@@ -468,6 +503,9 @@ export default function GlobeMap() {
   const [pinned, setPinned] = useState<Probe | null>(null);
   const [howTo, setHowTo] = useState(false);
   const [size, setSize] = useState({ w: 9999, h: 9999 });
+  /** Raw cells behind the "fireCoarse" source, kept around so a zoom change alone can
+   *  re-aggregate them at the new step without re-fetching. */
+  const coarseCellsRef = useRef<CellRow[]>([]);
   useEffect(() => {
     viewRef.current = state.view;
   }, [state.view]);
@@ -576,7 +614,7 @@ export default function GlobeMap() {
     setPinned(null);
     if (state.view === "region" && region) {
       rotating.current = false;
-      if (map.getProjection()?.type !== "mercator") map.setProjection({ type: "mercator" });
+      setProjectionSafe(map, "mercator");
       const [a, b, c, d] = region.bbox;
       const el = container.current;
       // The analysis column opens in the same commit, so measure the map after layout settles.
@@ -595,7 +633,7 @@ export default function GlobeMap() {
       if (isPhone()) {
         map.fitBounds(HOME_BOUNDS, { padding: 16, pitch: 0, duration: 2000, essential: true });
       } else {
-        map.setProjection({ type: "globe" });
+        setProjectionSafe(map, "globe");
         map.flyTo({ center: GLOBE_HOME.center, zoom: GLOBE_HOME.zoom, pitch: 0, duration: 2400, essential: true });
         map.once("moveend", () => {
           if (viewRef.current === "globe") rotating.current = true;
@@ -696,9 +734,10 @@ export default function GlobeMap() {
     let alive = true;
     const set = (cells: CellRow[]) => {
       if (!alive) return;
-      (map.getSource("fire") as GeoJSONSource | undefined)?.setData(cellsToGeoJSON(cells, 0.1));
-      (map.getSource("fireCoarse") as GeoJSONSource | undefined)?.setData(cellsToGeoJSON(cells, COARSE_STEP));
-      const fine = cellsToGeoJSON(cells, 0.1);
+      coarseCellsRef.current = cells;
+      (map.getSource("fire") as GeoJSONSource | undefined)?.setData(cellsToGeoJSON(cells, NATIVE_STEP));
+      (map.getSource("fireCoarse") as GeoJSONSource | undefined)?.setData(cellsToGeoJSON(cells, coarseStepForZoom(map.getZoom())));
+      const fine = cellsToGeoJSON(cells, NATIVE_STEP);
       (map.getSource("fireHeat") as GeoJSONSource | undefined)?.setData({
         type: "FeatureCollection",
         features: fine.features.map((f) => ({
@@ -723,6 +762,15 @@ export default function GlobeMap() {
       alive = false;
     };
   }, [ready, state.view, region, selected, regions, homeYear, homeMonth]);
+
+  // Re-aggregate the coarse mosaic as the zoom changes, so its square shrinks continuously
+  // toward the native 0.1° cell instead of jumping between two fixed sizes. `zoom` is already
+  // quantized to quarter-steps (see the map's "zoom" listener below), so this is cheap.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || zoom >= FINE_ZOOM) return;
+    (map.getSource("fireCoarse") as GeoJSONSource | undefined)?.setData(cellsToGeoJSON(coarseCellsRef.current, coarseStepForZoom(zoom)));
+  }, [zoom, ready]);
 
   // True sensor footprints for the selected region/month (demo regions only; missing -> mosaic).
   const pxKey = state.view === "region" && region && selected && pxRegions?.has(region.id) ? `${region.id}:${selected.year}-${selected.month}` : null;
@@ -764,7 +812,8 @@ export default function GlobeMap() {
   const explore = state.tab === "explore";
   const inRegion = state.view === "region" && !!region && explore;
   const close = zoom >= PIXEL_ZOOM;
-  const squareKm = zoom >= FINE_ZOOM ? "10" : "50";
+  // ~111 km per degree at the equator; rounded to the nearest 5 km so it doesn't jitter every tick.
+  const squareKm = String(Math.max(10, Math.round((coarseStepForZoom(zoom) * 111.32) / 5) * 5));
   const period = state.view === "region" && selected ? { year: selected.year, month: selected.month as number | null } : { year: homeYear, month: homeMonth };
 
   const card = (probe: Probe, mode: "hover" | "pinned") => (
@@ -822,7 +871,7 @@ export default function GlobeMap() {
       )}
 
       {inRegion && (hasPx || close) && (
-        <div className="pointer-events-none absolute top-3 right-14 left-3 z-10 flex justify-end xl:left-[290px]">
+        <div className="pointer-events-none absolute top-3 right-14 left-3 z-10 flex justify-end md:left-[320px]">
           <div className="panel pointer-events-auto flex max-w-full flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2 text-[12px]">
             {close && hasPx ? (
               <>

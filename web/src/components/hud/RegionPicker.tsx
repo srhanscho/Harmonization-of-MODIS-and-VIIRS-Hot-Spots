@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ArrowRight, ChevronDown, Crosshair, MapPin, Search, X } from "lucide-react";
+import { useMemo, useState, type ReactNode } from "react";
+import { ArrowLeft, ArrowRight, ChevronDown, Crosshair, MapPin, Search, X } from "lucide-react";
 import { DataState } from "./DataState";
 import { useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
@@ -43,23 +43,31 @@ export function regionAt(regions: Region[], lat: number, lon: number): Region | 
     .sort((a, b) => (a.bbox[2] - a.bbox[0]) * (a.bbox[3] - a.bbox[1]) - (b.bbox[2] - b.bbox[0]) * (b.bbox[3] - b.bbox[1]))[0];
 }
 
-export function RegionPicker({ collapsible = false }: { collapsible?: boolean }) {
+/**
+ * Place search card + (optional) `between` slot + the demo/region/coordinates options card.
+ * `between` renders as its own card directly under the search field (used for the date picker).
+ */
+export function RegionPicker({ collapsible = false, between }: { collapsible?: boolean; between?: ReactNode }) {
   const { state, dispatch, regions } = useStore();
   const { t } = useI18n();
   const list = useMemo(() => (regions?.status === "ok" ? regions.data : []), [regions]);
   const countries = useMemo(() => [...new Set(list.map((r) => r.country))].sort(), [list]);
-  const current = list.find((r) => r.id === state.regionId);
+  // `lastRegion` is the one last opened (kept after leaving, so the country dropdown doesn't jump);
+  // `current` is only set while a region is actually open, so demos / dropdown reflect "no region".
+  const lastRegion = list.find((r) => r.id === state.regionId);
+  const current = state.view === "region" ? lastRegion : undefined;
   const [country, setCountry] = useState<string>("");
-  const activeCountry = country || current?.country || countries[0] || "";
+  const activeCountry = country || lastRegion?.country || countries[0] || "";
   const admins = list.filter((r) => r.country === activeCountry && !isNational(r)).sort((a, b) => a.name.localeCompare(b.name));
   const national = list.find((r) => r.country === activeCountry && isNational(r));
   const [lat, setLat] = useState("");
   const [lon, setLon] = useState("");
   const [msg, setMsg] = useState<string | null>(null);
   const [query, setQuery] = useState("");
-  const [manual, setManual] = useState<{ view: string; open: boolean } | null>(null);
-  // Expanded at home, folded to the search field once a region is open (unless the user chose).
-  const expanded = !collapsible || (manual && manual.view === state.view ? manual.open : state.view === "globe");
+  // Starts expanded and only folds when the user collapses it: opening a region must not hide
+  // the demo / country / province selectors, or there would be no visible way out of it.
+  const [collapsed, setCollapsed] = useState(false);
+  const expanded = !collapsible || !collapsed;
   const q = fold(query.trim());
   const matches = q
     ? list
@@ -69,6 +77,7 @@ export function RegionPicker({ collapsible = false }: { collapsible?: boolean })
     : [];
 
   const select = (id: string, year?: number, month?: number) => dispatch({ type: "selectRegion", regionId: id, year, month });
+  const exit = () => dispatch({ type: "backToGlobe" });
 
   const findByCoords = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,9 +96,10 @@ export function RegionPicker({ collapsible = false }: { collapsible?: boolean })
   };
 
   return (
+    <div className="pointer-events-auto flex flex-col gap-3 text-xs text-white">
     <nav
       aria-label={t("region")}
-      className="glass-panel pointer-events-auto flex flex-col space-y-3.5 rounded-2xl p-3.5 text-xs text-white"
+      className="glass-panel flex shrink-0 flex-col space-y-3.5 rounded-2xl p-3.5"
     >
       {/* Search Bar with Collapse Icon */}
       <div className="relative flex items-center rounded-xl border border-cyan-500/40 bg-[#071329]/80 px-3 py-2 text-slate-300 shadow-inner focus-within:border-cyan-400 focus-within:shadow-[0_0_12px_rgba(6,182,212,0.3)] transition">
@@ -123,12 +133,23 @@ export function RegionPicker({ collapsible = false }: { collapsible?: boolean })
             className="ml-1 shrink-0 text-slate-400 transition hover:text-white"
             aria-expanded={expanded}
             aria-label={t("region")}
-            onClick={() => setManual({ view: state.view, open: !expanded })}
+            onClick={() => setCollapsed((v) => !v)}
           >
             <ChevronDown className={`size-4 transition-transform duration-200 ${expanded ? "rotate-180 text-cyan-400" : ""}`} aria-hidden />
           </button>
         )}
       </div>
+
+      {current && !q && (
+        <div className="-mt-0.5 flex items-center justify-between gap-2 px-0.5">
+          <span className="min-w-0 truncate text-[11px] text-slate-400">
+            <span className="font-semibold text-white">{current.name}</span>
+          </span>
+          <button type="button" className="btn btn-quiet !h-7 shrink-0 !px-2 !text-[11.5px]" onClick={exit}>
+            <ArrowLeft className="size-3.5" aria-hidden /> {t("backToGlobe")}
+          </button>
+        </div>
+      )}
 
       {q && (
         <ul className="-mt-1.5 flex flex-col gap-1 rounded-xl border border-cyan-500/30 bg-[#071329]/95 p-1.5 shadow-xl backdrop-blur-xl" aria-label={t("searchResults")}>
@@ -154,8 +175,12 @@ export function RegionPicker({ collapsible = false }: { collapsible?: boolean })
           )}
         </ul>
       )}
+    </nav>
 
-      {expanded && (
+    {between}
+
+    {expanded && (
+      <div className="glass-panel shrink-0 space-y-3.5 rounded-2xl p-3.5">
         <>
           {/* Casos Demo Section */}
           <div className="space-y-2">
@@ -163,7 +188,7 @@ export function RegionPicker({ collapsible = false }: { collapsible?: boolean })
             <div className="space-y-1">
               {DEMOS.map((d) => {
                 const r = d.find(list);
-                const active = !!r && state.regionId === r.id;
+                const active = !!r && current?.id === r.id;
                 return (
                   <button
                     key={d.label}
@@ -175,7 +200,7 @@ export function RegionPicker({ collapsible = false }: { collapsible?: boolean })
                     disabled={!r}
                     title={r ? r.id : t("notGenerated")}
                     aria-pressed={active}
-                    onClick={() => r && select(r.id, d.year, d.month)}
+                    onClick={() => r && (active ? exit() : select(r.id, d.year, d.month))}
                   >
                     <span className={`h-3.5 w-1 shrink-0 rounded-full ${active ? "bg-blue-500" : "bg-transparent"}`} />
                     <span
@@ -226,7 +251,7 @@ export function RegionPicker({ collapsible = false }: { collapsible?: boolean })
                     <select
                       className="w-full cursor-pointer appearance-none bg-transparent pr-6 text-xs text-white outline-none"
                       value={current && current.country === activeCountry ? current.id : ""}
-                      onChange={(e) => e.target.value && select(e.target.value)}
+                      onChange={(e) => (e.target.value ? select(e.target.value) : exit())}
                     >
                       <option value="" className="bg-slate-900 text-slate-400">—</option>
                       {national && (
@@ -292,7 +317,8 @@ export function RegionPicker({ collapsible = false }: { collapsible?: boolean })
             </form>
           </div>
         </>
-      )}
-    </nav>
+      </div>
+    )}
+    </div>
   );
 }

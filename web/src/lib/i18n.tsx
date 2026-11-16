@@ -26,6 +26,11 @@ const en = {
   invalidCoords: "Enter a valid latitude (−90..90) and longitude (−180..180).",
   backToGlobe: "Back to globe",
   selectRegionPrompt: "Choose a region or a demo case to open its burning calendar.",
+  // date picker (sidebar, separate from the bottom scrub timeline)
+  dateLabel: "Date",
+  prevYear: "Previous year",
+  nextYear: "Next year",
+  dateNeedsPlace: "Pick a place to choose a date",
   // data states
   loading: "Loading…",
   notGenerated: "Data not generated yet — run the pipeline",
@@ -276,6 +281,10 @@ const es: Dict = {
   invalidCoords: "Ingresa una latitud (−90..90) y longitud (−180..180) válidas.",
   backToGlobe: "Volver al globo",
   selectRegionPrompt: "Elige una región o un caso demo para abrir su calendario de quema.",
+  dateLabel: "Fecha",
+  prevYear: "Año anterior",
+  nextYear: "Año siguiente",
+  dateNeedsPlace: "Elige un lugar para escoger la fecha",
   loading: "Cargando…",
   notGenerated: "Datos aún no generados — ejecuta el pipeline",
   notGeneratedHint: "Archivo esperado:",
